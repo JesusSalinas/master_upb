@@ -1,5 +1,5 @@
 from openai import OpenAI
-from getPDF import get_txt_from_pdf, dividir_pdf
+from src.getPDF import get_txt_from_pdf, dividir_pdf
 
 client = OpenAI(
     organization='org-SNspvMleh5EHgwB92bJrEujZ'
