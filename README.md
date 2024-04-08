@@ -8,18 +8,18 @@
 ## Resume
 The main aim of this project is to provide a... 
 ## Pre-requirements
-* To have installed a node version [managment](https://github.com/nvm-sh/nvm)
-* To have installed the ``v16.11.1`` node version or higher
+* To have installed a python version [managment](https://github.com/pyenv/pyenv)
+* To have installed the ``3.11.4`` python version or higher
 ## Setup
 * ``$ git clone https://github.com/JesusSalinas/master_upb.git``
 * ``$ cd ../repository_folder``
-* ``$ pip install -r requirements.txt``
+* ``$ pip3 install -r requirements.txt``
 ## Structure
   ```bash
 master_upb/
 │
 ├── src/
-│   ├── main.py
+│   ├── scrap.py
 │   ├── ...
 │
 ├── data/
@@ -32,6 +32,7 @@ master_upb/
 │
 ├── requirements.txt
 ├── README.md
+├── main.py
 └── .gitignore
 ```
 ## Use

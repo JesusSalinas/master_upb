@@ -7,10 +7,10 @@ from urllib.parse import quote_plus
 from dotenv import load_dotenv
 load_dotenv()
 
-env_password = quote_plus(os.getenv('MONGO_PASS'))
-env_user = quote_plus(os.getenv('MONGO_USER'))
-env_db = os.getenv('MONGO_DB')
-env_host = os.getenv('MONGO_HOST')
+env_password = quote_plus(os.getenv('DB_MONGO_PASS'))
+env_user = quote_plus(os.getenv('DB_MONGO_USER'))
+env_db = os.getenv('DB_MONGO_DB')
+env_host = os.getenv('DB_MONGO_HOST')
 env_uri = 'mongodb+srv://' + env_user+ ':' + env_password + '@' + env_host + '/'
 
 class MongoDBConnector:
