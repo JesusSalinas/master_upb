@@ -44,3 +44,7 @@ class MongoDBConnector:
             print('COLLECTION FETCH SUCCESSFULL!')
         except Exception as e:
             print('COLLECTION FETCH FAILED!', e)
+
+    def insert_document(self, document):
+        result = self.collection.insert_one(document)
+        print('INSERTED DOCUMENT SUCCESSFULL! - ID:', result.inserted_id)
