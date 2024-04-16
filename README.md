@@ -37,5 +37,5 @@ master_upb/
 ```
 ## Use
   ```python
-python scrap.py
+python3 main.py
 ```

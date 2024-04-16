@@ -1,44 +1,56 @@
 import requests
-from bs4 import BeautifulSoup
-import json
+import os
 import requests
 
+from dotenv import load_dotenv
+load_dotenv()
+
+env_api_key = os.getenv('HUB_API_KEY')
+env_host = os.getenv('HUB_HOST')
+env_project_token = os.getenv('HUB_PROJECT_TOKEN')
+
 params = {
-  "api_key": "tnBavm0BZh2J",
+  "api_key": env_api_key,
   "format": "json"
 }
 
+class ParseHubScrap:
+  def __init__(self):
+    self.host=env_host
+    self.project= None
 
-# run = requests.post("https://www.parsehub.com/api/v2/projects/tYJCFXHyCta6/run", data=params)
+  def get_project(self, project):
+    base_url = self.host + '/projects/' + project
+    try:
+      getData = requests.get(base_url, params=params)
+      print("FETCH PROJECT INFO SUCCESSFULL!")
+      return getData.text
+    except Exception as e:
+      print("FETCH PROJECT INFO FAILED!:", e)
+    
+  def run_project(self, project):
+    base_url = self.host + '/projects/' + project + '/run'
+    try:
+      getData = requests.post(base_url, params=params)
+      print("RUN PROJECT SUCCESSFULL!")
+      return getData.text
+    except Exception as e:
+      print("RUN PROJECT FAILED!:", e)
 
-# json_data = json.loads(run.text)
-# print(json_data)
+  def run_status(self, run_token):
+    base_url = self.host + '/runs/' + run_token
+    try:
+      getData = requests.get(base_url, params=params)
+      print("FETCH STATUS PROJECT SUCCESSFULL!")
+      return getData.text
+    except Exception as e:
+      print("FETCH STATUS PROJECT FAILED!:", e)
 
-# getRun = requests.get('https://www.parsehub.com/api/v2/runs/tGmVPjTvAvo9', params=params)
-# json_data = json.loads(getRun.text)
-# print(json_data)
-# print(getRun.text)
-
-getData = requests.get('https://www.parsehub.com/api/v2/runs/tGmVPjTvAvo9/data', params=params)
-print(getData.text)
-
-# URL de la página a scrapear
-# url = 'https://www.gov.uk/government/publications/uk-government-green-financing'
-
-# # https://www.gov.uk/government/organisations/environment-agency
-# # https://espanol.epa.gov/
-# # https://asogravas.org/
-
-# # Realizar la solicitud GET a la página
-# response = requests.get(url)
-
-# # Verificar si la solicitud fue exitosa (código de estado 200)
-# if response.status_code == 200:
-#     soup = BeautifulSoup(response.content, "html.parser")
-#     p_tags = soup.find_all("p")
-#     #titles = [p.find("a").get_text() for p in p_tags]
-
-#     print(p_tags)
-# else:
-#     print(f'Error al obtener la página. Código de estado: {response.status_code}')
-#     print(response.reason)
+  def get_data_run(self, run_token):
+    base_url = self.host + '/runs/' + run_token + '/data'
+    try:
+      getData = requests.get(base_url, params=params)
+      print("FETCH DATA RUN SUCCESSFULL!")
+      return getData.text
+    except Exception as e:
+      print("FETCH DATA RUN FAILED!:", e)
