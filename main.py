@@ -11,9 +11,9 @@ from src.scrap import ParseHubScrap
 # }
 
 resources = {
-    'uuid': '3634634',
-    'date': '2024-04-14',
-    'project_id': '67967969',
+    'uuid': '2624614',
+    'date': '2024-04-20',
+    'project_id': '23965969',
     'research_source': 'uk url',
     'txt_to_analyze': [
 
@@ -66,7 +66,6 @@ txt_eng = 'I love you like the sea loves the river, like the night loves the day
 #     for result in results:
 #         print(result)
 
-
 # connector.disconnect()
 
 # txt_to_analyze = get_txt_from_pdf('natural_language.pdf')
@@ -74,26 +73,75 @@ txt_eng = 'I love you like the sea loves the river, like the night loves the day
 # primer_elemento = next(iter(textos_por_pagina.items()))
 # txt_to_analyze = primer_elemento
 
+connector = MongoDBConnector()
+connector.connect()
+connector.get_collection('CollectionTest')
 
 scrap = ParseHubScrap()
-a = scrap.get_data_run('tRm2etJR1f5R')
+info = scrap.get_all_projects()
+projects = json.loads(info)
+
+for project in projects['projects']: 
+    if project['title'] == 'uk_gob':
+        token = project['token']
+
+if token is not None:
+    info_project = scrap.run_project(token)
+    run = json.loads(info_project)
+    #print(run)
+    run_token = run['run_token']
+    print(run_token)
+    info = scrap.run_status(run_token)
+    info_run = json.loads(info)
+   # print(info)
+    while info_run['status'] != 'complete':
+        info = scrap.run_status(run_token)
+        info_run = json.loads(info)
+        print('dentro')
+    if info_run['status'] == 'complete':
+        data = scrap.get_data_run(run_token)
+        data_run = json.loads(data)
+        resources['txt_to_analyze'].append(data_run)
+        if (connector.collection!=None):
+            connector.insert_document(resources)
+
+if (connector.collection!=None):
+    results = connector.collection.find({}) 
+    for result in results:
+        print(result)
+
+connector.disconnect()
+
+
+# obtenemos los projectos, guardamos en array mandamos ejecutarlos async
+# y luego consultamos estatus guardanod la info
+
+# y luego hacemos el analisis
+
+# y luego?
+
+#a = scrap.get_data_run('tRm2etJR1f5R')
 #print(a)
 
-# json_data = json.loads(run.text)
-# print(json_data)
-
-json_data = json.loads(a)
-print(json_data)
-
-# getRun = requests.get('https://www.parsehub.com/api/v2/runs/tGmVPjTvAvo9', params=params)
-# json_data = json.loads(getRun.text)
-# print(json_data)
-# print(getRun.text)
-
-# getData = requests.get('https://www.parsehub.com/api/v2/runs/tGmVPjTvAvo9/data', params=params)
-# print(getData.text)
-
+#uk_gob
 
 # https://www.gov.uk/government/organisations/environment-agency
 # https://espanol.epa.gov/
 # https://asogravas.org/
+
+
+
+# import asyncio
+# import aiohttp
+
+# async def consultar_status(url):
+#     async with aiohttp.ClientSession() as session:
+#         async with session.get(url) as response:
+#             return response.status
+
+# async def main():
+#     url = 'https://ejemplo.com'  # Reemplaza con tu URL de consulta
+#     status = await consultar_status(url)
+#     print(f"El estado de la consulta a {url} es: {status}")
+
+# asyncio.run(main())
