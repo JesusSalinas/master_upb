@@ -11,15 +11,33 @@ def add_hosts():
     entries=[]
     entries.append(entry_h1.get())
     entries.append(entry_h2.get())
-    for entry in entries:
-        host = scrap.valid_host(entry)
-        if host:
-            txt_urls.insert(tk.END, entry + '\n')
-            html = scrap.get_data()
-            #print(html)
-        else: 
-            txt_urls.insert(tk.END, 'Por favor validar la información ingresada. Error:' + scrap.err)
-            print(scrap.err)
+    # To-do: validar que no sea un caracter vacio que obtiene del input porque no reconoce el vacio 
+    if entries:
+        for entry in entries:
+            host = scrap.valid_host(entry)
+            if host:
+                txt_urls.insert(tk.END, entry + '\n')
+                projects['hosts'].append(entry)
+                html = scrap.get_data()
+                resources['txt_raw'].append(html)
+                print(html['title'])
+                #print(html)
+            else: 
+                txt_urls.insert(tk.END, 'Por favor validar la información ingresada. Error: ' + scrap.err + '\n')
+                print(scrap.err)
+    else:
+        txt_urls.insert(tk.END, 'Por favor ingresa la información requerida. Error:')
+
+def add_txt_raw():
+    if resources['txt_raw']:
+        connector = MongoDBConnector()
+        connector.connect()
+        connector.get_collection('CollectionTest')
+        if (connector.collection!=None):
+            connector.insert_document(resources)
+            lab_get_txt.config(text='Información obtenida correctamente.')
+    else: 
+        lab_get_txt.config(text='Error al obtener la información. Por favor valida que las URL\'s se agregaron correctamente. ')
 
 scrap = BeautySoapScrap()
 
@@ -42,5 +60,11 @@ lab_urls.pack(pady=10)
 
 txt_urls = tk.Text(window)
 txt_urls.pack(pady=10)
+
+btn_add_hosts = tk.Button(window, text="Obtener información.", command=add_txt_raw)
+btn_add_hosts.pack()
+
+lab_get_txt = tk.Label(window, text='')
+lab_get_txt.pack(pady=10)
 
 window.mainloop()
