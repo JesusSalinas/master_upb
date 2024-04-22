@@ -3,6 +3,7 @@ import json
 from src.mongo import MongoDBConnector
 from src.gpt import AIOpenAPI
 from src.scrap import ParseHubScrap
+from src.beauty import BeautySoapScrap
 
 # doc = {
 #     'name': 'Carls Max',
@@ -15,6 +16,9 @@ resources = {
     'date': '2024-04-20',
     'project_id': '23965969',
     'research_source': 'uk url',
+    'txt_raw': [
+
+    ],
     'txt_to_analyze': [
 
     ],
@@ -73,44 +77,44 @@ txt_eng = 'I love you like the sea loves the river, like the night loves the day
 # primer_elemento = next(iter(textos_por_pagina.items()))
 # txt_to_analyze = primer_elemento
 
-connector = MongoDBConnector()
-connector.connect()
-connector.get_collection('CollectionTest')
+# connector = MongoDBConnector()
+# connector.connect()
+# connector.get_collection('CollectionTest')
 
-scrap = ParseHubScrap()
-info = scrap.get_all_projects()
-projects = json.loads(info)
+# scrap = ParseHubScrap()
+# info = scrap.get_all_projects()
+# projects = json.loads(info)
 
-for project in projects['projects']: 
-    if project['title'] == 'uk_gob':
-        token = project['token']
+# for project in projects['projects']: 
+#     if project['title'] == 'uk_gob':
+#         token = project['token']
 
-if token is not None:
-    info_project = scrap.run_project(token)
-    run = json.loads(info_project)
-    #print(run)
-    run_token = run['run_token']
-    print(run_token)
-    info = scrap.run_status(run_token)
-    info_run = json.loads(info)
-   # print(info)
-    while info_run['status'] != 'complete':
-        info = scrap.run_status(run_token)
-        info_run = json.loads(info)
-        print('dentro')
-    if info_run['status'] == 'complete':
-        data = scrap.get_data_run(run_token)
-        data_run = json.loads(data)
-        resources['txt_to_analyze'].append(data_run)
-        if (connector.collection!=None):
-            connector.insert_document(resources)
+# if token is not None:
+#     info_project = scrap.run_project(token)
+#     run = json.loads(info_project)
+#     #print(run)
+#     run_token = run['run_token']
+#     print(run_token)
+#     info = scrap.run_status(run_token)
+#     info_run = json.loads(info)
+#    # print(info)
+#     while info_run['status'] != 'complete':
+#         info = scrap.run_status(run_token)
+#         info_run = json.loads(info)
+#         print('dentro')
+#     if info_run['status'] == 'complete':
+#         data = scrap.get_data_run(run_token)
+#         data_run = json.loads(data)
+#         resources['txt_to_analyze'].append(data_run)
+#         if (connector.collection!=None):
+#             connector.insert_document(resources)
 
-if (connector.collection!=None):
-    results = connector.collection.find({}) 
-    for result in results:
-        print(result)
+# if (connector.collection!=None):
+#     results = connector.collection.find({}) 
+#     for result in results:
+#         print(result)
 
-connector.disconnect()
+# connector.disconnect()
 
 
 # obtenemos los projectos, guardamos en array mandamos ejecutarlos async
@@ -145,3 +149,33 @@ connector.disconnect()
 #     print(f"El estado de la consulta a {url} es: {status}")
 
 # asyncio.run(main())
+
+
+scrap = BeautySoapScrap()
+host = scrap.valid_host('https://www.gov.35tetr/')
+
+if host:
+    html = scrap.get_data()
+    print(html)
+else: 
+    print(scrap.err)
+
+import tkinter as tk
+
+def imprimir_contenido():
+    contenido = entrada.get()
+    resultado.config(text="Contenido del campo de entrada: " + contenido)
+
+ventana = tk.Tk()
+ventana.title("Mi Aplicación")
+
+entrada = tk.Entry(ventana, width=30)
+entrada.pack(pady=10)
+
+boton = tk.Button(ventana, text="Imprimir Contenido", command=imprimir_contenido)
+boton.pack()
+
+resultado = tk.Label(ventana, text="")
+resultado.pack(pady=10)
+
+ventana.mainloop()
