@@ -1,16 +1,7 @@
 import requests
 
 from bs4 import BeautifulSoup
-
-data = {
-    'title': '',
-    'bullets': [
-
-    ],
-    'paragraphs': [
-         
-    ]
-}
+from src.interfaces import data
 
 class BeautySoapScrap:
     """ This Class """
