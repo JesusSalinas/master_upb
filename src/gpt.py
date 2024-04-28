@@ -12,11 +12,11 @@ class AIOpenAPI:
     self.model=env_model
     self.client= OpenAI(organization=env_organization)
 
-  def prompt(self, txt_to_analyze, max_tokens):
+  def prompt(self, prompt,  txt_to_analyze, max_tokens):
     try:
       rsp = self.client.completions.create(
         model=self.model,
-        prompt=f"Analiza el siguiente texto: {txt_to_analyze}",
+        prompt=f"{prompt}: {txt_to_analyze}",
         max_tokens=max_tokens
       )
       print('OPEN_AI API PROMPTED SUCCESSFULL!')

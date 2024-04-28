@@ -1,2 +1,4 @@
 __pycache__/
 .env
+docs/.DS_Store
+.DS_Store

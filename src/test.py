@@ -98,3 +98,17 @@ connector.disconnect()
 # https://www.gov.uk/government/organisations/environment-agency
 # https://espanol.epa.gov
 # https://asogravas.org
+
+
+
+    # if archivo:
+    #     try:
+    #         with open(archivo, 'r') as f:
+    #             lector_csv = csv.reader(f)
+    #             contenido = ""
+    #             for fila in lector_csv:
+    #                 contenido += ", ".join(fila) + "\n"
+    #             self.texto_contenido.delete("1.0", tk.END)
+    #             self.texto_contenido.insert(tk.END, contenido)
+    #     except Exception as e:
+    #         tk.messagebox.showerror("Error", f"No se pudo cargar el archivo: {e}")

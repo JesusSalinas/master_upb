@@ -10,14 +10,16 @@ class BeautySoapScrap:
         self.body=None
         self.err=None
 
-    def valid_host(self, host):
+    async def valid_host(self, host):
         """ This Function """
         base_url = host
         try:
             response = requests.get(base_url)
             if response.status_code == 200:
                 print("FETCH HOST SUCCESSFULL!")
-                self.body = response.content
+                rsp = response.content
+                #print(rsp)
+                self.body = self.get_data(rsp)
                 return True
             else:
                 print("FETCH HOST FAILED!")
@@ -28,16 +30,20 @@ class BeautySoapScrap:
             self.err = str(e)
             return False
         
-    def get_data(self):
+    def get_data(self, body):
         """ This Function """
-        html = BeautifulSoup(self.body, "html.parser")
-        data['title'] = html.find("h1").text.strip()
-        bullets = html.select("main li")
-        for li in bullets:
-            txt = li.text.strip()
-            data['bullets'].append(txt)
-        paragraphs = html.select("main p")
-        for p in paragraphs:
-            txt = p.text.strip()
-            data['paragraphs'].append(txt)
-        return data
+        if body:
+            html = BeautifulSoup(body, "html.parser")
+            data['title'] = html.find("h1").text.strip()
+            bullets = html.select("main li")
+            for li in bullets:
+                txt = li.text.strip()
+                data['bullets'].append(txt)
+            paragraphs = html.select("main p")
+            for p in paragraphs:
+                txt = p.text.strip()
+                data['paragraphs'].append(txt)
+            return data
+        else:
+            print("FETCH self.body FAILED!:")
+            return False
