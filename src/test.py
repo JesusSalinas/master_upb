@@ -97,7 +97,8 @@ connector.disconnect()
 
 # https://www.gov.uk/government/organisations/environment-agency
 # https://espanol.epa.gov
-# https://asogravas.org
+# https://www.globalefficiencyintel.com/what-are-green-cement-and-concrete
+# https://www.forbes.com/sites/erikkobayashisolomon/2023/11/13/eco-materials-sustainable-green-cement-is-transforming-construction/?sh=74f88dea3404
 
 
 

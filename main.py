@@ -2,6 +2,7 @@ import json
 import tkinter as tk
 import csv
 import asyncio
+import copy
 
 from src.mongo import MongoDBConnector
 from src.gpt import AIOpenAPI
@@ -9,13 +10,21 @@ from src.beauty import BeautySoapScrap
 from src.interfaces import resources, projects, outcomes
 from tkinter import filedialog
 
-def add_txt_raw():
+async def add_txt_raw():
+    urls = projects['hosts']
+    for link in urls:
+        host = await scrap.valid_host(link)
+        if host:
+            resources['txt_raw'].append(copy.deepcopy(scrap.body))
+        else: 
+            txt_urls.insert(tk.END, 'Por favor validar la información del archivo. Error: ' + scrap.err + '\n')
+            print(scrap.err)
     if resources['txt_raw']:
         connector = MongoDBConnector()
         connector.connect()
         connector.get_collection('CollectionTest')
         if (connector.collection!=None):
-            connector.insert_document(projects)
+            connector.insert_document(resources)
             lab_get_txt.config(text='Información obtenida correctamente.')
     else: 
         lab_get_txt.config(text='Error al obtener la información. Por favor valida que las URL\'s se agregaron correctamente. ')
@@ -36,20 +45,8 @@ def get_urls_csv():
     else: 
         tk.messagebox.showerror("Error", f"No se pudo cargar el archivo.")
 
-async def haga():
-    aaa = projects['hosts']
-    #print(projects['hosts'])
-    for a in aaa:
-        host = await scrap.valid_host(a)
-        if host:
-            resources['txt_raw'].append(scrap.body)
-        else: 
-            txt_urls.insert(tk.END, 'Por favor validar la información del archivo. Error: ' + scrap.err + '\n')
-            print(scrap.err)
-    print(resources['txt_raw'])
-
-def iniciar_proceso():
-    asyncio.run(haga())
+def run_process():
+    asyncio.run(add_txt_raw())
 
 scrap = BeautySoapScrap()
 
@@ -67,7 +64,7 @@ lab_urls.pack(pady=10)
 txt_urls = tk.Text(window)
 txt_urls.pack(pady=10)
 
-btn_add_hosts = tk.Button(window, text="Obtener información.", command=iniciar_proceso)
+btn_add_hosts = tk.Button(window, text="Obtener información.", command=run_process)
 btn_add_hosts.pack()
 
 lab_get_txt = tk.Label(window, text='')

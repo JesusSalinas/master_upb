@@ -18,7 +18,6 @@ class BeautySoapScrap:
             if response.status_code == 200:
                 print("FETCH HOST SUCCESSFULL!")
                 rsp = response.content
-                #print(rsp)
                 self.body = self.get_data(rsp)
                 return True
             else:
@@ -43,6 +42,7 @@ class BeautySoapScrap:
             for p in paragraphs:
                 txt = p.text.strip()
                 data['paragraphs'].append(txt)
+            print(data['title'])
             return data
         else:
             print("FETCH self.body FAILED!:")
