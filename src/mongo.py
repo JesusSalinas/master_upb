@@ -45,9 +45,20 @@ class MongoDBConnector:
         except Exception as e:
             print('COLLECTION FETCH FAILED!', e)
 
-    def insert_document(self, document):
+    def insert_document(self, document, collection_name):
         try: 
-            result = self.collection.insert_one(document)
+            result = self.db[collection_name].insert_one(document)
             print('INSERTED DOCUMENT SUCCESSFULL! - ID:', result.inserted_id)
         except Exception as e:
             print('INSERTED DOCUMENT FAILED!', e)
+
+    def update_document(self, filter, collection_name, new_value):
+        try: 
+            result = self.db[collection_name].update_one(filter, {"$set": new_value})
+            if result.modified_count > 0:
+                print('UPDATED DOCUMENT SUCCESSFULL!')
+            else:
+                print('DOCUMENT NOT FOUND!')
+                
+        except Exception as e:
+            print('UPDATED DOCUMENT FAILED!', e)

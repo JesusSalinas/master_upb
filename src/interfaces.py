@@ -1,37 +1,34 @@
 resources = {
-    'uuid': '0024614',
-    'date': '2024-04-21',
     'project_id': '44965969',
-    'research_source': 'uk url',
+    'date': '2024-04-21',
+    'research_source': [
+
+    ],
     'txt_raw': [
 
     ],
-    'txt_to_analyze': [
-
-    ],
-    'txt_analized': ''
+    'txt_to_analyze': ''
 }
 
 projects = {
     'project_id': '',
     'project_name': '',
+    'description': '',
     'started_date': '',
     'end_date': '',
+    'status': '',
     'finished': False,
     'author': '',
-    'hosts': [
+    'research_source': [
 
     ],
     'outcomes': [
         {
-            'id': '',
+            'date': '',
+            'prompt': '',
             'data': ''
         }
     ]
-}
-
-outcomes = {
-    'project_id': '',
 }
 
 data = {
