@@ -13,6 +13,7 @@ resources = {
 projects = {
     'project_id': '',
     'project_name': '',
+    'topic': '',
     'description': '',
     'started_date': '',
     'end_date': '',

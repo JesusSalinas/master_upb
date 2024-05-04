@@ -1,5 +1,6 @@
 
 import os
+import json
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -38,23 +39,24 @@ class MongoDBConnector:
         except Exception as e:
             print('DB DISCONNECTION FAILED!:', e)
     
-    def get_collection(self, collection_name):
+    #To-do delete this method
+    def get_collection(self, collection):
         try:
-            self.collection = self.db[collection_name]
+            self.collection = self.db[collection]
             print('COLLECTION FETCH SUCCESSFULL!')
         except Exception as e:
             print('COLLECTION FETCH FAILED!', e)
 
-    def insert_document(self, document, collection_name):
+    def insert_document(self, document, collection):
         try: 
-            result = self.db[collection_name].insert_one(document)
+            result = self.db[collection].insert_one(document)
             print('INSERTED DOCUMENT SUCCESSFULL! - ID:', result.inserted_id)
         except Exception as e:
             print('INSERTED DOCUMENT FAILED!', e)
 
-    def update_document(self, filter, collection_name, new_value):
+    def update_document(self, filter, collection, new_value):
         try: 
-            result = self.db[collection_name].update_one(filter, {"$set": new_value})
+            result = self.db[collection].update_one(filter, {"$set": new_value})
             if result.modified_count > 0:
                 print('UPDATED DOCUMENT SUCCESSFULL!')
             else:
@@ -62,3 +64,20 @@ class MongoDBConnector:
                 
         except Exception as e:
             print('UPDATED DOCUMENT FAILED!', e)
+    
+    def fetch_documents(self, collection):
+        if collection in self.db.list_collection_names():
+            coll = self.db[collection]
+            if coll.count_documents({}) > 0:
+                documents = self.db[collection].find()
+                print('FETCHED DOCUMENTS SUCCESSFULL!')
+                documents_list = []
+                for doc in documents:
+                    documents_list.append(json.dumps(doc, default=str, indent=4))
+                return documents_list
+            else: 
+                return False
+        else:
+            print('COLLECTION NOT FOUND')
+            return False
+

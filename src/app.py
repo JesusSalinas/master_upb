@@ -3,7 +3,6 @@ import json
 import csv
 import asyncio
 import copy
-import uuid
 
 from src.mongo import MongoDBConnector
 from src.gpt import AIOpenAPI
@@ -40,21 +39,46 @@ class WelcomeFrame(tk.Frame):
         self.image_label = tk.Label(self, image=self.photo, bg="white")
         self.image_label.pack(pady=20)
 
-        self.button = tk.Button(self, text="Iniciar nuevo proyecto", font=("Helvetica", 20), bg="gray", fg="black", command=self.start_project)
-        self.button.pack(pady=20)
+        self.btn_new_project = tk.Button(self, text="Iniciar nuevo proyecto", font=("Helvetica", 20), bg="gray", fg="black", command=self.start_project)
+        self.btn_new_project.pack(side=tk.LEFT, padx=100, pady=10)
 
-        self.listbox = tk.Listbox(self)
-        self.listbox.pack(pady=20, padx=20, fill=tk.BOTH, expand=True)
-
-        self.listbox.insert(tk.END, "Elemento 1")
-        self.listbox.insert(tk.END, "Elemento 2")
-        self.listbox.insert(tk.END, "Elemento 3")
-        self.listbox.insert(tk.END, "Elemento 4")
+        self.btn_select_project = tk.Button(self, text="Elegir proyecto", font=("Helvetica", 20), bg="gray", fg="black", command=self.select_project)
+        self.btn_select_project.pack(side=tk.RIGHT, padx=100, pady=10)
 
     def start_project(self):
         self.master.welcome_frame.pack_forget()
         init_frame = InitFrame(self.master)
         init_frame.pack(fill=tk.BOTH, expand=True)
+
+    def select_project(self):
+        connector = MongoDBConnector()
+        connector.connect()
+        documents = connector.fetch_documents('Projects')
+        connector.disconnect()
+        if documents != False:
+            docs = [json.loads(doc) for doc in documents]
+            self.btn_new_project.pack_forget()
+            self.btn_select_project.pack_forget()
+            self.listbox = tk.Listbox(self, selectmode=tk.SINGLE)
+            self.listbox.pack(pady=10, padx=100, fill=tk.BOTH, expand=True)
+            self.listbox.config(yscrollcommand=self.scrollbar.set)
+            self.scrollbar = tk.Scrollbar(self.listbox, orient=tk.VERTICAL, command=self.listbox.yview)
+            self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+            for doc in docs:
+                self.listbox.insert(tk.END, doc['project_name'])
+            self.btn_select = tk.Button(self, text="Continuar", font=("Helvetica", 20), bg="gray", fg="black", command=self.continue_project)
+            self.btn_select.pack(pady=10)
+        else:
+            tk.messagebox.showwarning(message="No hay projectos iniciados.", title="UPB APPLICATION") 
+
+    def continue_project(self):
+        selected_index = self.listbox.curselection()
+        if selected_index:
+            selected_item = self.listbox.get(selected_index)
+            print("Elemento seleccionado:", selected_item)
+        else:
+            tk.messagebox.showwarning(message="No hay projecto seleccionado.", title="UPB APPLICATION") 
+
 
 class InitFrame(tk.Frame):
     def __init__(self, master):
@@ -77,6 +101,12 @@ class InitFrame(tk.Frame):
         self.text_author = tk.Entry(self)
         self.text_author.pack(pady=5, padx=200, fill=tk.X)
 
+        self.label_topic = tk.Label(self, text="Tema del proyecto:", font=("Helvetica", 24), bg="white", fg="black")
+        self.label_topic.pack(pady=5)
+
+        self.text_topic = tk.Entry(self)
+        self.text_topic.pack(pady=5, padx=200, fill=tk.X)
+
         self.label_desc = tk.Label(self, text="Descripción del proyecto:", font=("Helvetica", 24), bg="white", fg="black")
         self.label_desc.pack(pady=5)
 
@@ -91,6 +121,13 @@ class InitFrame(tk.Frame):
         self.txt_urls = tk.Text(self)
         self.btn_add_hosts = tk.Button(self, text="Obtener información", font=("Helvetica", 24), bg="gray", fg="black", command=self.run_process)
         
+        self.checkboxes = []
+
+        for i in range(10):
+            checkbox_var = tk.BooleanVar()
+            checkbox = tk.Checkbutton(self, text=f"Elemento {i+1}", variable=checkbox_var, bg="gray")
+            checkbox.pack(anchor=tk.W)
+            self.checkboxes.append(checkbox_var)
 
     def get_urls_csv(self):
         urls= []
@@ -114,15 +151,15 @@ class InitFrame(tk.Frame):
     def save_info_project(self):
         project_name = self.text_name.get()
         author = self.text_author.get()
+        topic = self.text_topic.get()
         description = self.text_desc.get()
-        project_id = uuid.uuid4()
-        project_date = date.today()
+        project_date = str(date.today())
         if(project_name == '' or author == '' or description == ''):
             tk.messagebox.showwarning(message="Valida que los campos no sean vacíos", title="UPB APPLICATION")
         else:
-            projects['project_id'] = project_id
             projects['project_name'] = project_name
             projects['description'] = description
+            projects['topic'] = topic
             projects['started_date'] = project_date
             projects['author'] = author
             projects['status'] = 'INITIATED'
