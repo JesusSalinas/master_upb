@@ -1,6 +1,6 @@
 resources = {
-    'project_id': '44965969',
-    'date': '2024-04-21',
+    'project_id': '',
+    'date': '',
     'research_source': [
 
     ],

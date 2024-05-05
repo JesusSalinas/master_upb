@@ -28,49 +28,55 @@ class MongoDBConnector:
         try:
             self.client = MongoClient(env_uri, server_api=ServerApi('1'))
             self.db = self.client[self.database_name]
-            print('DB CONNECTION SUCCESSFULL!:', self.database_name)
+            print('DB CONNECTED SUCCESSFULL!:', self.database_name)
         except Exception as e:
             print("DB CONNECTION FAILED!:", e)
     
     def disconnect(self):
         try:
             self.client.close()
-            print('DB DISCONNECTION SUCCESSFULL!')
+            print('DB DISCONNECTED SUCCESSFULL!')
         except Exception as e:
             print('DB DISCONNECTION FAILED!:', e)
-    
-    #To-do delete this method
-    def get_collection(self, collection):
-        try:
-            self.collection = self.db[collection]
-            print('COLLECTION FETCH SUCCESSFULL!')
-        except Exception as e:
-            print('COLLECTION FETCH FAILED!', e)
 
     def insert_document(self, document, collection):
-        try: 
-            result = self.db[collection].insert_one(document)
-            print('INSERTED DOCUMENT SUCCESSFULL! - ID:', result.inserted_id)
-        except Exception as e:
-            print('INSERTED DOCUMENT FAILED!', e)
+        if collection in self.db.list_collection_names():
+            try: 
+                result = self.db[collection].insert_one(document)
+                print('DOCUMENT INSERTED SUCCESSFULL!')
+                inserted_id = str(result.inserted_id)
+                return inserted_id
+            except Exception as e:
+                print('DOCUMENT INSERT FAILED!', e)
+                return False
+        else:
+            print('COLLECTION NOT FOUND!')
+            return False
 
     def update_document(self, filter, collection, new_value):
-        try: 
-            result = self.db[collection].update_one(filter, {"$set": new_value})
-            if result.modified_count > 0:
-                print('UPDATED DOCUMENT SUCCESSFULL!')
-            else:
-                print('DOCUMENT NOT FOUND!')
-                
-        except Exception as e:
-            print('UPDATED DOCUMENT FAILED!', e)
+        if collection in self.db.list_collection_names():
+            try: 
+                result = self.db[collection].update_one(filter, {"$set": new_value})
+                if result.modified_count > 0:
+                    print('DOCUMENT UPDATED SUCCESSFULL!')
+                    return result.modified_count
+                else:
+                    print('DOCUMENT NOT FOUND!')
+                    return False
+                    
+            except Exception as e:
+                print('DOCUMENT UPDATE FAILED!', e)
+                return False
+        else:
+            print('COLLECTION NOT FOUND!')
+            return False
     
     def fetch_documents(self, collection):
         if collection in self.db.list_collection_names():
             coll = self.db[collection]
             if coll.count_documents({}) > 0:
                 documents = self.db[collection].find()
-                print('FETCHED DOCUMENTS SUCCESSFULL!')
+                print('DOCUMENTS FETCHED SUCCESSFULL!')
                 documents_list = []
                 for doc in documents:
                     documents_list.append(json.dumps(doc, default=str, indent=4))
@@ -87,7 +93,7 @@ class MongoDBConnector:
             coll = self.db[collection]
             document = coll.find_one(query)
             if document != None:
-                print('FETCHED DOCUMENT SUCCESSFULL!')
+                print('DOCUMENT FETCHED SUCCESSFULL!')
                 document_json = json.dumps(document, default=str, indent=4)
                 return document_json
             else: 

@@ -33,13 +33,19 @@ class App(tk.Tk):
     def add_scrap(self):
         self.scrap_frame = ScrapFrame(self)
         self.scrap_frame.pack(fill=tk.BOTH, expand=True)
+    def add_data_clean(self):
+        self.data_clean_frame = DataCleanFrame(self)
+        self.data_clean_frame.pack(fill=tk.BOTH, expand=True)
     def drop_init(self):
         self.init_frame.pack_forget()
     def drop_welcome(self):
         self.welcome_frame.pack_forget()
     def drop_scrap(self):
         self.scrap_frame.pack_forget()
-
+    def drop_data_clean(self):
+        self.data_clean_frame.pack_forget()
+    def drop_txt_analysi(self):
+        self.txt_analysis_frame.pack_forget()
 
 class WelcomeFrame(tk.Frame):
     def __init__(self, master):
@@ -94,7 +100,6 @@ class WelcomeFrame(tk.Frame):
         else:
             tk.messagebox.showwarning(message="No hay projecto seleccionado.", title="UPB APPLICATION") 
 
-
 class InitFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -146,14 +151,16 @@ class InitFrame(tk.Frame):
             projects['author'] = author
             projects['status'] = 'INITIATED'
 
-            #connector = MongoDBConnector()
-            #connector.connect()
-            #connector.insert_document(projects, 'Projects')
-            # TO-DO validar que se inserto bien el documento esta fallando por el uuid
-            #connector.disconnect()
-
-            self.master.drop_init()
-            self.master.add_scrap()
+            connector = MongoDBConnector()
+            connector.connect()
+            doc = connector.insert_document(projects, 'Projects')
+            connector.disconnect()
+            if doc != False:
+                projects['project_id'] = doc
+                self.master.drop_init()
+                self.master.add_scrap()
+            else:
+               tk.messagebox.showwarning(message="Valida la información ingresada. Hubo un error al guardar el proyecto.", title="UPB APPLICATION") 
 
 class ScrapFrame(tk.Frame):
     def __init__(self, master):
@@ -204,6 +211,9 @@ class ScrapFrame(tk.Frame):
 
     async def add_txt_raw(self):
         urls = projects['research_source']
+        resource_date = str(date.today())
+        resources['date'] = resource_date
+        resources['project_id'] = projects['project_id']
         for link in urls:
             host = await scrap.valid_host(link)
             if host:
@@ -214,15 +224,23 @@ class ScrapFrame(tk.Frame):
         if resources['txt_raw']:
             connector = MongoDBConnector()
             connector.connect()
-            connector.insert_document(resources, 'CollectionTest')
-            tk.messagebox.showinfo(message="Información obtenida correctamente.", title="UPB APPLICATION")
+            doc = connector.insert_document(resources, 'CollectionTest')
             connector.disconnect()
-            #connector.get_collection('CollectionTest')
-            # if (connector.collection!=None):
-            #     connector.insert_document(resources)
-            #     tk.messagebox.showinfo(message="Información obtenida correctamente.", title="UPB APPLICATION")
+            if doc != False:
+                #To-Do update el status del projecto
+                tk.messagebox.showinfo(message="Información obtenida correctamente.", title="UPB APPLICATION")
+                self.master.drop_scrap()
+                self.master.add_data_clean()
+            else:
+                tk.messagebox.showwarning(message="Error al guardar la información. Por favor valida que el archivo CSV fue cargado correctamente.", title="UPB APPLICATION")
         else: 
             tk.messagebox.showwarning(message="Error al obtener la información. Por favor valida que el archivo CSV fue cargado correctamente.", title="UPB APPLICATION")
+
+class DataCleanFrame(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.configure(bg="white")
 
 class TxtAnalysisFrame(tk.Frame):
     def __init__(self, master):
