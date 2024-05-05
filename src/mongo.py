@@ -76,8 +76,24 @@ class MongoDBConnector:
                     documents_list.append(json.dumps(doc, default=str, indent=4))
                 return documents_list
             else: 
+                print('DOCUMENTS NOT FOUND!')
                 return False
         else:
-            print('COLLECTION NOT FOUND')
+            print('COLLECTION NOT FOUND!')
+            return False
+        
+    def find_document(self, collection, query):
+        if collection in self.db.list_collection_names():
+            coll = self.db[collection]
+            document = coll.find_one(query)
+            if document != None:
+                print('FETCHED DOCUMENT SUCCESSFULL!')
+                document_json = json.dumps(document, default=str, indent=4)
+                return document_json
+            else: 
+                print('DOCUMENT NOT FOUND!')
+                return False
+        else:
+            print('COLLECTION NOT FOUND!')
             return False
 
