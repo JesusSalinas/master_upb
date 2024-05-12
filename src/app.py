@@ -228,6 +228,7 @@ class ScrapFrame(tk.Frame):
             connector.disconnect()
             if doc != False:
                 #To-Do update el status del projecto
+                projects['status'] = 'SCRAPED_DATA'
                 tk.messagebox.showinfo(message="Información obtenida correctamente.", title="UPB APPLICATION")
                 self.master.drop_scrap()
                 self.master.add_data_clean()
@@ -241,25 +242,117 @@ class DataCleanFrame(tk.Frame):
         super().__init__(master)
 
         self.configure(bg="white")
+        self.label_title = tk.Label(self, text="Paso #3: Proceso de limpieza de texto", font=("Helvetica", 24), bg="white", fg="black")
+        self.label_title.pack(pady=5)
+
+        self.label_description = tk.Label(self, text="Aquí podras realizar la limipeza/preparación de la información extraída en el paso atnerior o elegir que la aplicación lo realize. Por favor da click en Continuar", font=("Helvetica", 14), bg="white", fg="black")
+        self.label_description.pack(pady=5)
+
+        self.label_project = tk.Label(self, text=f"Proyecto: {projects['project_name']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_project.pack(side=tk.LEFT)
+        #self.label_project.place(y=0)
+        
+        self.label_topic = tk.Label(self, text=f"Tema: {projects['topic']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_topic.pack(side=tk.RIGHT)
+        #self.label_topic.place(y=10, x=-1)
+
+        self.button_question = tk.Button(self, text="Continuar", font=("Helvetica", 20), bg="gray", fg="black", command=self.show_choice_message)
+        self.button_question.pack(pady=5)
+
+
+    def show_choice_message(self):
+        result = tk.messagebox.askquestion("Selección de Acción", "¿Deseas realizar manualmente la limpieza de Texto?",
+                                        icon='question', 
+                                        type='yesnocancel')
+        
+        if result == 'yes':
+            self.button_question.pack_forget()
+            self.label_description.configure(text='Realiza la descarga del Texto obtenido por Web Scraping. Limpia la información y sube un documento nuevo.')
+            self.button_download = tk.Button(self, text="Descargar Archivo", font=("Helvetica", 20), bg="gray", fg="black", command=self.download_file)
+            self.button_download.pack(pady=5)
+        elif result == 'no':
+            self.clean_txt()
+        else:
+            print('USER CANCEL CLEAN DATA')
+
+    def upload_txt_clean(self):
+        file = filedialog.askopenfilename(initialdir="/", title="Selecciona un archivo TXT", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+        if file:
+            try: 
+                with open(file, 'r', newline='') as f:
+                    content = f.read()
+                    resources['txt_to_analyze'] = content
+                    # To-do validar linea anterior
+                    if content:
+                        self.master.drop_data_clean()
+                        self.master.add_txt_analysis()
+                    else:
+                        tk.messagebox.showwarning(message=f"Archivo vacio. Por favor valida la información cargada.", title="UPB APPLICATION")
+            except Exception as e:
+                tk.messagebox.showwarning(message=f"No se pudo cargar el archivo: {e}", title="UPB APPLICATION")
+        else: 
+            tk.messagebox.showwarning(message="No se pudo cargar el archivo.", title="UPB APPLICATION")
+
+    def download_file(self):
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")])
+        if file_path:
+            try:
+                with open(file_path, "w") as file:
+                    file.write("Este es un archivo de texto generado automáticamente.")
+                    #To-do implementar la generación del archivo a partir del json resourcers
+                tk.messagebox.showwarning(message="El archivo se ha descargado correctamente.", title="UPB APPLICATION")
+                self.button_download.pack_forget()
+                self.btn_upload_file = tk.Button(self, text="Cargar archivo", font=("Helvetica", 20), bg="gray", fg="black", command=self.upload_txt_clean)
+                self.btn_upload_file.pack(pady=5)
+
+            except Exception as e:
+                tk.messagebox.showwarning(message="Error al descargar el archivo. Intenta nuevamente.", title="UPB APPLICATION")
+
+    def clean_txt(self):
+        print('Limpiando datos...')
+        #To-do implementar la funcion de limpeza de datos
+
+        self.master.drop_data_clean()
+        self.master.add_txt_analysis()
 
 class TxtAnalysisFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
         self.configure(bg="white")
+        self.label_title = tk.Label(self, text="Paso #4: Proceso de Analysis de texto", font=("Helvetica", 24), bg="white", fg="black")
+        self.label_title.pack(pady=5)
 
-        # self.checkboxes = []
-        # connector = MongoDBConnector()
-        # connector.connect()
-        # query = { "prompts": "Generalidades" }
-        # document = connector.find_document('Catalogs', query)
-        # connector.disconnect()
-        # if document != False:
-        #     doc = json.loads(document)
-        #     for catalogue in doc['prompts']:
-        #         checkbox_var = tk.BooleanVar()
-        #         checkbox = tk.Checkbutton(self, text=catalogue, variable=checkbox_var, bg="gray")
-        #         checkbox.pack(anchor=tk.W)
-        #         self.checkboxes.append(checkbox_var)
-        # else: 
-        #     print('ERROR Catalogues')
+        self.label_description = tk.Label(self, text="Aquí podras realizar el analysis de la información. \n Por favor elige los puntos que deseas obtener del tema del prjecto.", font=("Helvetica", 14), bg="white", fg="black")
+        self.label_description.pack(pady=5)
+
+        self.label_project = tk.Label(self, text=f"Proyecto: {projects['project_name']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_project.pack(side=tk.LEFT)
+        #self.label_project.place(y=0)
+        
+        self.label_topic = tk.Label(self, text=f"Tema: {projects['topic']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_topic.pack(side=tk.RIGHT)
+        #self.label_topic.place(y=10, x=-1)
+
+        self.checkboxes = []
+        connector = MongoDBConnector()
+        connector.connect()
+        query = { "prompts": "Generalidades" }
+        document = connector.find_document('Catalogs', query)
+        connector.disconnect()
+        if document != False:
+            doc = json.loads(document)
+            for catalogue in doc['prompts']:
+                checkbox_var = tk.BooleanVar()
+                checkbox = tk.Checkbutton(self, text=catalogue, variable=checkbox_var, bg="gray")
+                checkbox.pack(anchor=tk.W)
+                self.checkboxes.append(checkbox_var)
+        else: 
+            print('FETCH CATALOGUES FAILED!')
+
+        self.btn_txt_analysis = tk.Button(self, text="Analizar Información.", font=("Helvetica", 20), bg="gray", fg="black", command=self.txt_analysis)
+        self.btn_txt_analysis.pack(pady=5)
+
+    def txt_analysis(self):
+        print('Analizando datos...')
+        #To-do implementar la funcion de analis de datos
