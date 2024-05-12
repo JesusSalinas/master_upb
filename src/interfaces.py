@@ -41,3 +41,10 @@ data = {
          
     ]
 }
+
+assistant_thread_messages = {
+    'role': '',
+    'content': [
+        
+    ]
+}

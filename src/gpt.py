@@ -86,16 +86,24 @@ class AIOpenAPI:
         print('ASSISTANT UPDATED FAILED!:', e)
         return False
     
-  def create_thread(self, role, content):
+  def create_thread_messages(self, messages):
     try:
         thread = self.client.beta.threads.create(
-			messages=[
-				{
-				'role': role,
-				'content': content
-				}
-			]
+			messages=[messages]
 		)
+        if thread.id != None:
+           print('THREAD CREATED SUCCESS!')
+           return thread.id
+        else:
+           print('THREAD CREATED FAILED!')
+           return False
+    except Exception as e: 
+        print('THREAD CREATED FAILED!:', e)
+        return False
+    
+  def create_empty_thread(self, role, content):
+    try:
+        thread = self.client.beta.threads.create()
         if thread.id != None:
            print('THREAD CREATED SUCCESS!')
            return thread.id
@@ -123,13 +131,46 @@ class AIOpenAPI:
     
   def fetch_thread_messages(self, thread_id, run_id):
     try:
-        messages = list(self.client.beta.threads.messages.list(thread_id=thread_id, run_id=run_id))
-        if len(messages) != 0:
+        thread_messages = self.client.beta.threads.messages.list(thread_id=thread_id, run_id=run_id)
+        if len(thread_messages['data']) != 0:
            print('FETCH THREAD MESSAGES SUCCESS!')
-           return messages
+           return list(thread_messages['data'])
         else:
            print('FETCH THREAD MESSAGES FAILED!')
            return False
     except Exception as e: 
         print('FETCH THREAD MESSAGES FAILED!:', e)
+        return False
+    
+  def create_thread_message(self, thread_id, role, content):
+    try:
+        thread_message = self.client.beta.threads.messages.create(
+		thread_id,
+		role=role,
+		content=content,
+		)
+        if thread_message.id != None:
+           print('MESSAGE THREAD CREATED SUCCESS!')
+           return thread_message.id
+        else:
+           print('MESSAGE THREAD CREATED FAILED!')
+           return False
+    except Exception as e: 
+        print('MESSAGE THREAD CREATED FAILED!:', e)
+        return False
+    
+  def fetch_thread_message(self, thread_id, message_id):
+    try:
+        message = self.client.beta.threads.messages.retrieve(
+			message_id=message_id,
+			thread_id=thread_id,
+		)
+        if message.id != None:
+           print('MESSAGE THREAD CREATED SUCCESS!')
+           return message.id
+        else:
+           print('MESSAGE THREAD CREATED FAILED!')
+           return False
+    except Exception as e: 
+        print('MESSAGE THREAD CREATED FAILED!:', e)
         return False
