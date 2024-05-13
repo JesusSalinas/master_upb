@@ -7,7 +7,7 @@ resources = {
     'txt_raw': [
 
     ],
-    'txt_to_analyze': ''
+    'txt_to_analyze': 'This is a test'
 }
 
 projects = {
@@ -45,6 +45,6 @@ data = {
 assistant_thread_messages = {
     'role': '',
     'content': [
-        
+
     ]
 }

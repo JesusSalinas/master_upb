@@ -13,13 +13,14 @@ from PIL import Image, ImageTk
 from datetime import date
 
 scrap = BeautySoapScrap()
+gpt = AIOpenAPI()
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title("UPB APPLICATION")
-        self.geometry("1000x700")
+        self.title('UPB APPLICATION')
+        self.geometry('1000x700')
 
         self.welcome_frame = WelcomeFrame(self)
         self.welcome_frame.pack(fill=tk.BOTH, expand=True)
@@ -51,20 +52,20 @@ class WelcomeFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.configure(bg="white")
-        self.label_title = tk.Label(self, text="¡BIENVENID@S!", font=("Helvetica", 24), bg="lightblue", fg="black")
+        self.configure(bg='white')
+        self.label_title = tk.Label(self, text='¡BIENVENID@S!', font=('Helvetica', 24), bg='lightblue', fg='black')
         self.label_title.pack(pady=20)
 
-        self.image = Image.open("./img/background.jpeg") 
+        self.image = Image.open('./img/background.jpeg') 
         self.image = self.image.resize((300, 200), Image.LANCZOS)
         self.photo = ImageTk.PhotoImage(self.image)
-        self.image_label = tk.Label(self, image=self.photo, bg="white")
+        self.image_label = tk.Label(self, image=self.photo, bg='white')
         self.image_label.pack(pady=20)
 
-        self.btn_new_project = tk.Button(self, text="Iniciar nuevo proyecto", font=("Helvetica", 20), bg="gray", fg="black", command=self.start_project)
+        self.btn_new_project = tk.Button(self, text='Iniciar nuevo proyecto', font=('Helvetica', 20), bg='gray', fg='black', command=self.start_project)
         self.btn_new_project.pack(side=tk.LEFT, padx=100, pady=10)
 
-        self.btn_select_project = tk.Button(self, text="Elegir proyecto", font=("Helvetica", 20), bg="gray", fg="black", command=self.select_project)
+        self.btn_select_project = tk.Button(self, text='Elegir proyecto', font=('Helvetica', 20), bg='gray', fg='black', command=self.select_project)
         self.btn_select_project.pack(side=tk.RIGHT, padx=100, pady=10)
 
     def start_project(self):
@@ -87,52 +88,52 @@ class WelcomeFrame(tk.Frame):
             #self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
             for doc in docs:
                 self.listbox.insert(tk.END, doc['project_name'])
-            self.btn_select = tk.Button(self, text="Continuar", font=("Helvetica", 20), bg="gray", fg="black", command=self.continue_project)
+            self.btn_select = tk.Button(self, text='Continuar', font=('Helvetica', 20), bg='gray', fg='black', command=self.continue_project)
             self.btn_select.pack(pady=10)
         else:
-            tk.messagebox.showwarning(message="No hay projectos iniciados.", title="UPB APPLICATION") 
+            tk.messagebox.showwarning(message='No hay projectos iniciados.', title='UPB APPLICATION') 
 
     def continue_project(self):
         selected_index = self.listbox.curselection()
         if selected_index:
             selected_item = self.listbox.get(selected_index)
-            print("Elemento seleccionado:", selected_item)
+            print('Elemento seleccionado:', selected_item)
         else:
-            tk.messagebox.showwarning(message="No hay projecto seleccionado.", title="UPB APPLICATION") 
+            tk.messagebox.showwarning(message='No hay projecto seleccionado.', title='UPB APPLICATION') 
 
 class InitFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.configure(bg="white")
-        self.label_title = tk.Label(self, text="Paso #1: Creación del proyecto", font=("Helvetica", 24), bg="white", fg="black")
+        self.configure(bg='white')
+        self.label_title = tk.Label(self, text='Paso #1: Creación del proyecto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
 
-        self.label_name = tk.Label(self, text="Nombre del proyecto:", font=("Helvetica", 20), bg="white", fg="black")
+        self.label_name = tk.Label(self, text='Nombre del proyecto:', font=('Helvetica', 20), bg='white', fg='black')
         self.label_name.pack(pady=5)
 
         self.text_name = tk.Entry(self)
         self.text_name.pack(pady=5, padx=200, fill=tk.X)
 
-        self.label_author = tk.Label(self, text="Autor del proyecto:", font=("Helvetica", 20), bg="white", fg="black")
+        self.label_author = tk.Label(self, text='Autor del proyecto:', font=('Helvetica', 20), bg='white', fg='black')
         self.label_author.pack(pady=5)
 
         self.text_author = tk.Entry(self)
         self.text_author.pack(pady=5, padx=200, fill=tk.X)
 
-        self.label_topic = tk.Label(self, text="Tema del proyecto:", font=("Helvetica", 20), bg="white", fg="black")
+        self.label_topic = tk.Label(self, text='Tema del proyecto:', font=('Helvetica', 20), bg='white', fg='black')
         self.label_topic.pack(pady=5)
 
         self.text_topic = tk.Entry(self)
         self.text_topic.pack(pady=5, padx=200, fill=tk.X)
 
-        self.label_desc = tk.Label(self, text="Descripción del proyecto:", font=("Helvetica", 20), bg="white", fg="black")
+        self.label_desc = tk.Label(self, text='Descripción del proyecto:', font=('Helvetica', 20), bg='white', fg='black')
         self.label_desc.pack(pady=5)
 
         self.text_desc = tk.Entry(self)
         self.text_desc.pack(pady=5, padx=60, fill=tk.X)
 
-        self.btn_save_info = tk.Button(self, text="Guardar", font=("Helvetica", 20), bg="gray", fg="black", command=self.save_info_project)
+        self.btn_save_info = tk.Button(self, text='Guardar', font=('Helvetica', 20), bg='gray', fg='black', command=self.save_info_project)
         self.btn_save_info.pack(pady=5)
 
     def save_info_project(self):
@@ -142,7 +143,7 @@ class InitFrame(tk.Frame):
         description = self.text_desc.get()
         project_date = str(date.today())
         if(project_name == '' or author == '' or description == '' or topic == ''):
-            tk.messagebox.showwarning(message="Valida que los campos no sean vacíos", title="UPB APPLICATION")
+            tk.messagebox.showwarning(message='Valida que los campos no sean vacíos', title='UPB APPLICATION')
         else:
             projects['project_name'] = project_name
             projects['description'] = description
@@ -160,39 +161,39 @@ class InitFrame(tk.Frame):
                 self.master.drop_init()
                 self.master.add_scrap()
             else:
-               tk.messagebox.showwarning(message="Valida la información ingresada. Hubo un error al guardar el proyecto.", title="UPB APPLICATION") 
+               tk.messagebox.showwarning(message='Valida la información ingresada. Hubo un error al guardar el proyecto.', title='UPB APPLICATION') 
 
 class ScrapFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.configure(bg="white")
-        self.label_title = tk.Label(self, text="Paso #2: Proceso web scrapping", font=("Helvetica", 24), bg="white", fg="black")
+        self.configure(bg='white')
+        self.label_title = tk.Label(self, text='Paso #2: Proceso web scrapping', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
         
-        self.label_project = tk.Label(self, text=f"Proyecto: {projects['project_name']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
         self.label_project.pack(side=tk.LEFT)
         #self.label_project.place(y=0)
         
-        self.label_topic = tk.Label(self, text=f"Tema: {projects['topic']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
         self.label_topic.pack(side=tk.RIGHT)
         #self.label_topic.place(y=10, x=-1)
         
-        self.label_upload_file = tk.Label(self, text="Cargar los datos fuente:", font=("Helvetica", 24), bg="white", fg="black")   
+        self.label_upload_file = tk.Label(self, text='Cargar los datos fuente:', font=('Helvetica', 24), bg='white', fg='black')   
         self.label_upload_file.pack(pady=5)
         
-        self.btn_upload_csv = tk.Button(self, text="Cargar CSV", font=("Helvetica", 24), bg="gray", fg="black", command=self.get_urls_csv)
+        self.btn_upload_csv = tk.Button(self, text='Cargar CSV', font=('Helvetica', 24), bg='gray', fg='black', command=self.get_urls_csv)
         self.btn_upload_csv.pack(pady=5)
 
         self.txt_urls = tk.Text(self)
         self.txt_urls.pack(pady=5)
 
-        self.btn_add_hosts = tk.Button(self, text="Obtener información", font=("Helvetica", 24), bg="gray", fg="black", command=self.run_process)
+        self.btn_add_hosts = tk.Button(self, text='Obtener información', font=('Helvetica', 24), bg='gray', fg='black', command=self.run_process)
         self.btn_add_hosts.pack(pady=5)
 
     def get_urls_csv(self):
         urls= []
-        file = filedialog.askopenfilename(initialdir="/", title="Selecciona un archivo CSV", filetypes=(("Archivos CSV", "*.csv"), ("Todos los archivos", "*.*")))
+        file = filedialog.askopenfilename(initialdir='/', title='Selecciona un archivo CSV', filetypes=(('Archivos CSV', '*.csv'), ('Todos los archivos', '*.*')))
         if file:
             try: 
                 with open(file, 'r', newline='') as f:
@@ -202,9 +203,9 @@ class ScrapFrame(tk.Frame):
                         self.txt_urls.insert(tk.END, link + '\n')
                         projects['research_source'].append(link)
             except Exception as e:
-                tk.messagebox.showwarning(message=f"No se pudo cargar el archivo: {e}", title="UPB APPLICATION")
+                tk.messagebox.showwarning(message=f'No se pudo cargar el archivo: {e}', title='UPB APPLICATION')
         else: 
-            tk.messagebox.showwarning(message="No se pudo cargar el archivo.", title="UPB APPLICATION")
+            tk.messagebox.showwarning(message='No se pudo cargar el archivo.', title='UPB APPLICATION')
     
     def run_process(self):
         asyncio.run(self.add_txt_raw())
@@ -229,46 +230,46 @@ class ScrapFrame(tk.Frame):
             if doc != False:
                 #To-Do update el status del projecto
                 projects['status'] = 'SCRAPED_DATA'
-                tk.messagebox.showinfo(message="Información obtenida correctamente.", title="UPB APPLICATION")
+                tk.messagebox.showinfo(message='Información obtenida correctamente.', title='UPB APPLICATION')
                 self.master.drop_scrap()
                 self.master.add_data_clean()
             else:
-                tk.messagebox.showwarning(message="Error al guardar la información. Por favor valida que el archivo CSV fue cargado correctamente.", title="UPB APPLICATION")
+                tk.messagebox.showwarning(message='Error al guardar la información. Por favor valida que el archivo CSV fue cargado correctamente.', title='UPB APPLICATION')
         else: 
-            tk.messagebox.showwarning(message="Error al obtener la información. Por favor valida que el archivo CSV fue cargado correctamente.", title="UPB APPLICATION")
+            tk.messagebox.showwarning(message='Error al obtener la información. Por favor valida que el archivo CSV fue cargado correctamente.', title='UPB APPLICATION')
 
 class DataCleanFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.configure(bg="white")
-        self.label_title = tk.Label(self, text="Paso #3: Proceso de limpieza de texto", font=("Helvetica", 24), bg="white", fg="black")
+        self.configure(bg='white')
+        self.label_title = tk.Label(self, text='Paso #3: Proceso de limpieza de texto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
 
-        self.label_description = tk.Label(self, text="Aquí podras realizar la limipeza/preparación de la información extraída en el paso atnerior o elegir que la aplicación lo realize. Por favor da click en Continuar", font=("Helvetica", 14), bg="white", fg="black")
+        self.label_description = tk.Label(self, text='Aquí podras realizar la limipeza/preparación de la información extraída en el paso atnerior o elegir que la aplicación lo realize. Por favor da click en Continuar', font=('Helvetica', 14), bg='white', fg='black')
         self.label_description.pack(pady=5)
 
-        self.label_project = tk.Label(self, text=f"Proyecto: {projects['project_name']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
         self.label_project.pack(side=tk.LEFT)
         #self.label_project.place(y=0)
         
-        self.label_topic = tk.Label(self, text=f"Tema: {projects['topic']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
         self.label_topic.pack(side=tk.RIGHT)
         #self.label_topic.place(y=10, x=-1)
 
-        self.button_question = tk.Button(self, text="Continuar", font=("Helvetica", 20), bg="gray", fg="black", command=self.show_choice_message)
+        self.button_question = tk.Button(self, text='Continuar', font=('Helvetica', 20), bg='gray', fg='black', command=self.show_choice_message)
         self.button_question.pack(pady=5)
 
 
     def show_choice_message(self):
-        result = tk.messagebox.askquestion("Selección de Acción", "¿Deseas realizar manualmente la limpieza de Texto?",
+        result = tk.messagebox.askquestion('Selección de Acción', '¿Deseas realizar manualmente la limpieza de Texto?',
                                         icon='question', 
                                         type='yesnocancel')
         
         if result == 'yes':
             self.button_question.pack_forget()
             self.label_description.configure(text='Realiza la descarga del Texto obtenido por Web Scraping. Limpia la información y sube un documento nuevo.')
-            self.button_download = tk.Button(self, text="Descargar Archivo", font=("Helvetica", 20), bg="gray", fg="black", command=self.download_file)
+            self.button_download = tk.Button(self, text='Descargar Archivo', font=('Helvetica', 20), bg='gray', fg='black', command=self.download_file)
             self.button_download.pack(pady=5)
         elif result == 'no':
             self.clean_txt()
@@ -276,7 +277,7 @@ class DataCleanFrame(tk.Frame):
             print('USER CANCEL CLEAN DATA')
 
     def upload_txt_clean(self):
-        file = filedialog.askopenfilename(initialdir="/", title="Selecciona un archivo TXT", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+        file = filedialog.askopenfilename(initialdir='/', title='Selecciona un archivo TXT', filetypes=(('Archivos de texto', '*.txt'), ('Todos los archivos', '*.*')))
         if file:
             try: 
                 with open(file, 'r', newline='') as f:
@@ -287,26 +288,26 @@ class DataCleanFrame(tk.Frame):
                         self.master.drop_data_clean()
                         self.master.add_txt_analysis()
                     else:
-                        tk.messagebox.showwarning(message=f"Archivo vacio. Por favor valida la información cargada.", title="UPB APPLICATION")
+                        tk.messagebox.showwarning(message=f'Archivo vacio. Por favor valida la información cargada.', title='UPB APPLICATION')
             except Exception as e:
-                tk.messagebox.showwarning(message=f"No se pudo cargar el archivo: {e}", title="UPB APPLICATION")
+                tk.messagebox.showwarning(message=f'No se pudo cargar el archivo: {e}', title='UPB APPLICATION')
         else: 
-            tk.messagebox.showwarning(message="No se pudo cargar el archivo.", title="UPB APPLICATION")
+            tk.messagebox.showwarning(message='No se pudo cargar el archivo.', title='UPB APPLICATION')
 
     def download_file(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")])
+        file_path = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Archivos de texto', '*.txt')])
         if file_path:
             try:
-                with open(file_path, "w") as file:
-                    file.write("Este es un archivo de texto generado automáticamente.")
+                with open(file_path, 'w') as file:
+                    file.write('Este es un archivo de texto generado automáticamente.')
                     #To-do implementar la generación del archivo a partir del json resourcers
-                tk.messagebox.showwarning(message="El archivo se ha descargado correctamente.", title="UPB APPLICATION")
+                tk.messagebox.showwarning(message='El archivo se ha descargado correctamente.', title='UPB APPLICATION')
                 self.button_download.pack_forget()
-                self.btn_upload_file = tk.Button(self, text="Cargar archivo", font=("Helvetica", 20), bg="gray", fg="black", command=self.upload_txt_clean)
+                self.btn_upload_file = tk.Button(self, text='Cargar archivo', font=('Helvetica', 20), bg='gray', fg='black', command=self.upload_txt_clean)
                 self.btn_upload_file.pack(pady=5)
 
             except Exception as e:
-                tk.messagebox.showwarning(message="Error al descargar el archivo. Intenta nuevamente.", title="UPB APPLICATION")
+                tk.messagebox.showwarning(message=f'Error al descargar el archivo. Intenta nuevamente.{e}', title='UPB APPLICATION')
 
     def clean_txt(self):
         print('Limpiando datos...')
@@ -319,40 +320,56 @@ class TxtAnalysisFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
-        self.configure(bg="white")
-        self.label_title = tk.Label(self, text="Paso #4: Proceso de Analysis de texto", font=("Helvetica", 24), bg="white", fg="black")
+        self.configure(bg='white')
+        self.label_title = tk.Label(self, text='Paso #4: Proceso de Analysis de Texto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
 
-        self.label_description = tk.Label(self, text="Aquí podras realizar el analysis de la información. \n Por favor elige los puntos que deseas obtener del tema del prjecto.", font=("Helvetica", 14), bg="white", fg="black")
+        self.label_description = tk.Label(self, text='Aquí podras realizar el analysis de la información. \n Por favor elige los puntos que deseas obtener del tema del prjecto.', font=('Helvetica', 14), bg='white', fg='black')
         self.label_description.pack(pady=5)
 
-        self.label_project = tk.Label(self, text=f"Proyecto: {projects['project_name']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
         self.label_project.pack(side=tk.LEFT)
         #self.label_project.place(y=0)
         
-        self.label_topic = tk.Label(self, text=f"Tema: {projects['topic']}", font=("Helvetica", 14), bg="lightblue", fg="black")
+        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
         self.label_topic.pack(side=tk.RIGHT)
         #self.label_topic.place(y=10, x=-1)
 
         self.checkboxes = []
         connector = MongoDBConnector()
         connector.connect()
-        query = { "prompts": "Generalidades" }
+        query = { 'prompts': 'Generalidades' }
         document = connector.find_document('Catalogs', query)
         connector.disconnect()
         if document != False:
             doc = json.loads(document)
             for catalogue in doc['prompts']:
                 checkbox_var = tk.BooleanVar()
-                checkbox = tk.Checkbutton(self, text=catalogue, variable=checkbox_var, bg="gray")
+                checkbox = tk.Checkbutton(self, text=catalogue, variable=checkbox_var, bg='gray')
                 checkbox.pack(anchor=tk.W)
-                self.checkboxes.append(checkbox_var)
+                self.checkboxes.append((checkbox_var, catalogue))
         else: 
             print('FETCH CATALOGUES FAILED!')
 
-        self.btn_txt_analysis = tk.Button(self, text="Analizar Información.", font=("Helvetica", 20), bg="gray", fg="black", command=self.txt_analysis)
+        self.btn_txt_analysis = tk.Button(self, text='Analizar Información.', font=('Helvetica', 20), bg='gray', fg='black', command=self.txt_analysis)
         self.btn_txt_analysis.pack(pady=5)
 
     def txt_analysis(self):
-        print('Analizando datos...')
-        #To-do implementar la funcion de analis de datos
+        checked_values = []
+        file_path = '../docs/txt_to_analyze.txt'
+
+        if file_path:
+            try:
+                with open(file_path, 'w') as file:
+                    file.write(resources['txt_to_analyze'])
+            except Exception as e:
+                tk.messagebox.showwarning(message=f'Error al guardar el texto analizar: {e}', title='UPB APPLICATION')
+
+        for checkbox_var, catalogue in self.checkboxes:
+            if checkbox_var.get():
+                checked_values.append(catalogue)
+
+        if checked_values:
+            print(checked_values)
+        else:
+            tk.messagebox.showwarning(message='Debes elegir al menos una opción.', title='UPB APPLICATION')
