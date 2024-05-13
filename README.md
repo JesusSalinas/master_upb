@@ -19,15 +19,19 @@ The main aim of this project is to provide a...
 master_upb/
 │
 ├── src/
-│   ├── scrap.py
+│   ├── app.py
 │   ├── ...
 │
 ├── data/
-│   ├── dataset.csv
+│   ├── txt_to_analyze.txt
 │   ├── ...
 │
 ├── docs/
-│   ├── documentacion.pdf
+│   ├── example_urls.csv
+│   ├── ...
+│
+├── img/
+│   ├── background.jpeg
 │   ├── ...
 │
 ├── requirements.txt
