@@ -5,7 +5,7 @@ from gpt import AIOpenAPI
 gpt = AIOpenAPI()
 
 file_name = 'txt_to_analyze.txt'
-file_path = f'../data/{file_name}'
+file_path = f'./data/{file_name}'
 
 def create_txt_to_analyze_file(file_path):
     if resources['txt_to_analyze']:
@@ -46,18 +46,16 @@ msg = {
 
 if txt :
     file_assistant = gpt.create_file(file_path, 'assistants')
-    print(file_assistant)
     vectore_store_file = gpt.link_file_to_vector_store(file_assistant)
-    print(vectore_store_file)
     thread = gpt.create_thread_messages(msg)
-    print(thread)
     run = gpt.run_poll_thread(thread)
     if(run.status == 'completed'):
         msgs = gpt.fetch_thread_messages_list(thread, run.id)
         if msgs != False:
-            print(msgs)
+            for msg in msgs:
+                print(msg.content[0].text.value)
     elif (run.status == 'expired' or run.status == 'failed' or run.status == 'incomplete' or run.status == 'cancelled'):
-        print('error')
+        print('error 1')
 
 else:
-    print('error')
+    print('error 2')

@@ -190,15 +190,12 @@ class AIOpenAPI:
 				thread_id=thread_id,
 				run_id=run_id
 			)
-			for message in thread_messages:
-				print(message)
-			return False
-			# if len(thread_messages['data']) != 0:
-			# 	print('FETCH THREAD MESSAGES SUCCESS!')
-			# 	return list(thread_messages['data'])
-			# else:
-			# 	print('FETCH THREAD MESSAGES EMPTY!')
-			# 	return False
+			if thread_messages:
+				print('FETCH THREAD MESSAGES SUCCESS!')
+				return thread_messages
+			else:
+				print('FETCH THREAD MESSAGES EMPTY')
+				return False
 		except Exception as e: 
 			print('FETCH THREAD MESSAGES FAILED!:', e)
 			return False
