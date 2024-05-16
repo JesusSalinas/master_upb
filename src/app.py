@@ -7,7 +7,7 @@ import copy
 from src.mongo import MongoDBConnector
 from src.gpt import AIOpenAPI
 from src.beauty import BeautySoapScrap
-from src.interfaces import resources, projects
+from src.interfaces import resources, projects, assistant_thread_messages
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from datetime import date
@@ -320,6 +320,9 @@ class TxtAnalysisFrame(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
 
+        self.file_name = 'txt_to_analyze.txt'
+        self.file_path = f'./data/{self.file_name}'
+
         self.configure(bg='white')
         self.label_title = tk.Label(self, text='Paso #4: Proceso de Analysis de Texto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
@@ -356,7 +359,8 @@ class TxtAnalysisFrame(tk.Frame):
 
     def txt_analysis(self):
         checked_values = []
-        file_path = '../docs/txt_to_analyze.txt'
+        file_name = 'txt_to_analyze.txt'
+        file_path = f'./data/{file_name}'
 
         if file_path:
             try:
@@ -368,8 +372,39 @@ class TxtAnalysisFrame(tk.Frame):
         for checkbox_var, catalogue in self.checkboxes:
             if checkbox_var.get():
                 checked_values.append(catalogue)
+        
+        txt = self.create_txt_to_analyze_file()
 
         if checked_values:
-            print(checked_values)
+            assistant_thread_messages['role'] = 'user'
+            for value in checked_values:
+                prompt = {
+                    'type': 'text',
+                    'text': f'Describe brevemente: {value} del {projects["topic"]}'
+                }
+                assistant_thread_messages['content'].append(prompt)
+            print(assistant_thread_messages)
+            if txt:
+                a = 5
+                #TO-DO icluir el codigo test
+                # Agregar nueva pagina o loading
+                print(a)
+            else:
+                print('File no created. This is only informative.')
+
         else:
             tk.messagebox.showwarning(message='Debes elegir al menos una opción.', title='UPB APPLICATION')
+
+    def create_txt_to_analyze_file(self):
+        if resources['txt_to_analyze']:
+            try:
+                with open(self.file_path, 'w') as file:
+                    file.write(resources['txt_to_analyze'])
+                    print('FILE CREATED LOCAL SUCCESSFULL!')
+                    return True
+            except Exception as e:
+                tk.messagebox.showwarning(message=f'Error al crear el achivo analizar: {e}', title='UPB APPLICATION')
+                return False
+        else:
+            tk.messagebox.showwarning(message='No se encontro texto para analizar. Favor de reviar el proceso. ', title='UPB APPLICATION')
+            return False

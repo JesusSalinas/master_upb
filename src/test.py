@@ -56,6 +56,5 @@ if txt :
                 print(msg.content[0].text.value)
     elif (run.status == 'expired' or run.status == 'failed' or run.status == 'incomplete' or run.status == 'cancelled'):
         print('error 1')
-
 else:
     print('error 2')

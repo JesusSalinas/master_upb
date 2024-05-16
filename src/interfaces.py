@@ -7,7 +7,7 @@ resources = {
     'txt_raw': [
 
     ],
-    'txt_to_analyze': 'This is a test'
+    'txt_to_analyze': 'hfkhfkg6769'
 }
 
 projects = {
