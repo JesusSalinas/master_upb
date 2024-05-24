@@ -7,7 +7,6 @@ import threading
 import time
 
 from tkinter import ttk
-
 from src.mongo import MongoDBConnector
 from src.gpt import AIOpenAPI
 from src.beauty import BeautySoapScrap
@@ -172,16 +171,15 @@ class ScrapFrame(tk.Frame):
         super().__init__(master)
 
         self.configure(bg='white')
-        self.label_title = tk.Label(self, text='Paso #2: Proceso web scrapping', font=('Helvetica', 24), bg='white', fg='black')
-        self.label_title.pack(pady=5)
-        
+
         self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
-        self.label_project.pack(side=tk.LEFT)
-        #self.label_project.place(y=0)
+        self.label_project.pack(side='top', anchor='nw')
         
         self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
-        self.label_topic.pack(side=tk.RIGHT)
-        #self.label_topic.place(y=10, x=-1)
+        self.label_topic.pack(side='top', anchor='ne')
+
+        self.label_title = tk.Label(self, text='Paso #2: Proceso web scrapping', font=('Helvetica', 24), bg='white', fg='black')
+        self.label_title.pack(pady=5)
         
         self.label_upload_file = tk.Label(self, text='Cargar los datos fuente:', font=('Helvetica', 24), bg='white', fg='black')   
         self.label_upload_file.pack(pady=5)
@@ -247,19 +245,18 @@ class DataCleanFrame(tk.Frame):
         super().__init__(master)
 
         self.configure(bg='white')
+
+        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
+        self.label_project.pack(side='top', anchor='nw')
+        
+        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
+        self.label_topic.pack(side='top', anchor='ne')
+
         self.label_title = tk.Label(self, text='Paso #3: Proceso de limpieza de texto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
 
         self.label_description = tk.Label(self, text='Aquí podras realizar la limipeza/preparación de la información extraída en el paso atnerior o elegir que la aplicación lo realize. Por favor da click en Continuar', font=('Helvetica', 14), bg='white', fg='black')
         self.label_description.pack(pady=5)
-
-        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
-        self.label_project.pack(side=tk.LEFT)
-        #self.label_project.place(y=0)
-        
-        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
-        self.label_topic.pack(side=tk.RIGHT)
-        #self.label_topic.place(y=10, x=-1)
 
         self.button_question = tk.Button(self, text='Continuar', font=('Helvetica', 20), bg='gray', fg='black', command=self.show_choice_message)
         self.button_question.pack(pady=5)
@@ -327,19 +324,18 @@ class TxtAnalysisFrame(tk.Frame):
         self.file_path = f'./data/{self.file_name}'
 
         self.configure(bg='white')
+
+        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
+        self.label_project.pack(side='top', anchor='nw')
+        
+        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
+        self.label_topic.pack(side='top', anchor='ne')
+
         self.label_title = tk.Label(self, text='Paso #4: Proceso de Analysis de Texto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
 
         self.label_description = tk.Label(self, text='Aquí podras realizar el analysis de la información. \n Por favor elige los puntos que deseas obtener del tema del projecto.', font=('Helvetica', 14), bg='white', fg='black')
         self.label_description.pack(pady=5)
-
-        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
-        self.label_project.pack(side=tk.LEFT)
-        #self.label_project.place(y=0)
-        
-        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
-        self.label_topic.pack(side=tk.RIGHT)
-        #self.label_topic.place(y=10, x=-1)
 
         self.checkboxes = []
         connector = MongoDBConnector()
@@ -383,19 +379,14 @@ class TxtAnalysisFrame(tk.Frame):
             for value in checked_values:
                 prompt = {
                     'type': 'text',
-                    'text': f'Describe brevemente: {value} del {projects["topic"]}'
+                    'text': f'Describe detalladamente: {value} del {projects["topic"]}'
                 }
                 assistant_thread_messages['content'].append(prompt)
-            print(assistant_thread_messages)
+            #print(assistant_thread_messages)
             if txt:
-                a = 5
-                self.start_process()
-                #TO-DO icluir el codigo test
-                # Agregar nueva pagina o loading
-                print(a)
+                self.start_thread(assistant_thread_messages)
             else:
                 print('File no created. This is only informative.')
-
         else:
             tk.messagebox.showwarning(message='Debes elegir al menos una opción.', title='UPB APPLICATION')
 
@@ -413,23 +404,27 @@ class TxtAnalysisFrame(tk.Frame):
             tk.messagebox.showwarning(message='No se encontro texto para analizar. Favor de reviar el proceso. ', title='UPB APPLICATION')
             return False
 
-    def start_process(self):
-        self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="indeterminate")
-        self.progress_bar.pack(pady=10, fill=tk.X)
+    def start_thread(self, msg):
+        self.progress_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate')
+        self.progress_bar.pack(pady=20, fill=tk.X)
 
         self.progress_bar.start()
-        self.btn_txt_analysis.config(state="disabled")
+        self.btn_txt_analysis.config(state='disabled')
 
-        # Iniciar el hilo para ejecutar la función en segundo plano
-        threading.Thread(target=self.long_running_task).start()
+        threading.Thread(target=self.gpt_analyis(msg)).start()
 
-    def long_running_task(self):
-        # Simular una tarea de larga duración
-        time.sleep(10)
-
-        # Detener el loader y habilitar el botón una vez que la tarea termine
+    def gpt_analyis(self, msg):
+        file_assistant = gpt.create_file(self.file_path, 'assistants')
+        vectore_store_file = gpt.link_file_to_vector_store(file_assistant)
+        thread = gpt.create_thread_messages(msg)
+        run = gpt.run_poll_thread(thread)
+        if(run.status == 'completed'):
+            msgs = gpt.fetch_thread_messages_list(thread, run.id)
+            if msgs != False:
+                for msg in msgs:
+                    print(msg.content[0].text.value)
+        elif (run.status == 'expired' or run.status == 'failed' or run.status == 'incomplete' or run.status == 'cancelled'):
+            print('error 1')
         self.progress_bar.stop()
-        self.btn_txt_analysis.config(state="normal")
-
-        # Mostrar un mensaje indicando que la tarea ha terminado
+        self.btn_txt_analysis.config(state='normal')
         tk.messagebox.showinfo(message='Finalizo ', title='UPB APPLICATION')
