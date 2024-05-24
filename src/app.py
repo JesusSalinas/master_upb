@@ -3,6 +3,10 @@ import json
 import csv
 import asyncio
 import copy
+import threading
+import time
+
+from tkinter import ttk
 
 from src.mongo import MongoDBConnector
 from src.gpt import AIOpenAPI
@@ -225,7 +229,7 @@ class ScrapFrame(tk.Frame):
         if resources['txt_raw']:
             connector = MongoDBConnector()
             connector.connect()
-            doc = connector.insert_document(resources, 'CollectionTest')
+            doc = connector.insert_document(resources, 'Resources')
             connector.disconnect()
             if doc != False:
                 #To-Do update el status del projecto
@@ -259,7 +263,6 @@ class DataCleanFrame(tk.Frame):
 
         self.button_question = tk.Button(self, text='Continuar', font=('Helvetica', 20), bg='gray', fg='black', command=self.show_choice_message)
         self.button_question.pack(pady=5)
-
 
     def show_choice_message(self):
         result = tk.messagebox.askquestion('Selección de Acción', '¿Deseas realizar manualmente la limpieza de Texto?',
@@ -327,7 +330,7 @@ class TxtAnalysisFrame(tk.Frame):
         self.label_title = tk.Label(self, text='Paso #4: Proceso de Analysis de Texto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
 
-        self.label_description = tk.Label(self, text='Aquí podras realizar el analysis de la información. \n Por favor elige los puntos que deseas obtener del tema del prjecto.', font=('Helvetica', 14), bg='white', fg='black')
+        self.label_description = tk.Label(self, text='Aquí podras realizar el analysis de la información. \n Por favor elige los puntos que deseas obtener del tema del projecto.', font=('Helvetica', 14), bg='white', fg='black')
         self.label_description.pack(pady=5)
 
         self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
@@ -386,6 +389,7 @@ class TxtAnalysisFrame(tk.Frame):
             print(assistant_thread_messages)
             if txt:
                 a = 5
+                self.start_process()
                 #TO-DO icluir el codigo test
                 # Agregar nueva pagina o loading
                 print(a)
@@ -408,3 +412,24 @@ class TxtAnalysisFrame(tk.Frame):
         else:
             tk.messagebox.showwarning(message='No se encontro texto para analizar. Favor de reviar el proceso. ', title='UPB APPLICATION')
             return False
+
+    def start_process(self):
+        self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="indeterminate")
+        self.progress_bar.pack(pady=10, fill=tk.X)
+
+        self.progress_bar.start()
+        self.btn_txt_analysis.config(state="disabled")
+
+        # Iniciar el hilo para ejecutar la función en segundo plano
+        threading.Thread(target=self.long_running_task).start()
+
+    def long_running_task(self):
+        # Simular una tarea de larga duración
+        time.sleep(10)
+
+        # Detener el loader y habilitar el botón una vez que la tarea termine
+        self.progress_bar.stop()
+        self.btn_txt_analysis.config(state="normal")
+
+        # Mostrar un mensaje indicando que la tarea ha terminado
+        tk.messagebox.showinfo(message='Finalizo ', title='UPB APPLICATION')

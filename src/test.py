@@ -31,15 +31,15 @@ msg = {
         },
         {
             "type": "text",
-            "text": "Describe brevemente Generalidades del Cemento Verde:"
+            "text": "Describe detalladamente Generalidades del Cemento Verde:"
         },
         {
             "type": "text",
-            "text": "Describe brevemente Uso o aplicación en Colombia del Cemento Verde"
+            "text": "Describe detalladamente Uso o aplicación en Colombia del Cemento Verde"
         },
         {
             "type": "text",
-            "text": "Describe brevemente Descripción del Cemento Verde"
+            "text": "Describe detalladamente Descripción del Cemento Verde"
         }
     ]
 }

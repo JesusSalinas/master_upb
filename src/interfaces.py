@@ -24,11 +24,7 @@ projects = {
 
     ],
     'outcomes': [
-        {
-            'date': '',
-            'prompt': '',
-            'data': ''
-        }
+
     ]
 }
 
@@ -48,3 +44,9 @@ assistant_thread_messages = {
 
     ]
 }
+
+# {
+#     'date': '',
+#     'prompt': '',
+#     'data': ''
+# }
