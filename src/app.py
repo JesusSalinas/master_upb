@@ -14,6 +14,7 @@ from src.interfaces import resources, projects, assistant_thread_messages
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from datetime import date
+from bson import ObjectId
 
 scrap = BeautySoapScrap()
 gpt = AIOpenAPI()
@@ -255,7 +256,7 @@ class DataCleanFrame(tk.Frame):
         self.label_title = tk.Label(self, text='Paso #3: Proceso de limpieza de texto', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
 
-        self.label_description = tk.Label(self, text='Aquí podras realizar la limipeza/preparación de la información extraída en el paso atnerior o elegir que la aplicación lo realize. Por favor da click en Continuar', font=('Helvetica', 14), bg='white', fg='black')
+        self.label_description = tk.Label(self, text='Aquí podras realizar la limipeza/preparación de la información extraída en el paso atnerior o elegir que la aplicación lo realize.\n Por favor da click en Continuar', font=('Helvetica', 14), bg='white', fg='black')
         self.label_description.pack(pady=5)
 
         self.button_question = tk.Button(self, text='Continuar', font=('Helvetica', 20), bg='gray', fg='black', command=self.show_choice_message)
@@ -382,7 +383,6 @@ class TxtAnalysisFrame(tk.Frame):
                     'text': f'Describe detalladamente: {value} del {projects["topic"]}'
                 }
                 assistant_thread_messages['content'].append(prompt)
-            #print(assistant_thread_messages)
             if txt:
                 self.start_thread(assistant_thread_messages)
             else:
@@ -405,26 +405,39 @@ class TxtAnalysisFrame(tk.Frame):
             return False
 
     def start_thread(self, msg):
-        self.progress_bar = ttk.Progressbar(self, orient='horizontal', mode='indeterminate')
-        self.progress_bar.pack(pady=20, fill=tk.X)
-
-        self.progress_bar.start()
         self.btn_txt_analysis.config(state='disabled')
-
+        self.progress_bar = ttk.Progressbar(self, orient='horizontal', length=60, mode='indeterminate')
+        self.progress_bar.pack(pady=20, fill=tk.X)
+        self.progress_bar.start()
+        time.sleep(10)
         threading.Thread(target=self.gpt_analyis(msg)).start()
 
     def gpt_analyis(self, msg):
+        txt_resources = projects['research_source']
+        txt_outcome = ''
+        document_id = resources['project_id']
+        mongo_filter = {'_id': ObjectId(document_id)}
         file_assistant = gpt.create_file(self.file_path, 'assistants')
         vectore_store_file = gpt.link_file_to_vector_store(file_assistant)
-        thread = gpt.create_thread_messages(msg)
-        run = gpt.run_poll_thread(thread)
-        if(run.status == 'completed'):
-            msgs = gpt.fetch_thread_messages_list(thread, run.id)
-            if msgs != False:
-                for msg in msgs:
-                    print(msg.content[0].text.value)
-        elif (run.status == 'expired' or run.status == 'failed' or run.status == 'incomplete' or run.status == 'cancelled'):
-            print('error 1')
-        self.progress_bar.stop()
-        self.btn_txt_analysis.config(state='normal')
-        tk.messagebox.showinfo(message='Finalizo ', title='UPB APPLICATION')
+        if vectore_store_file:
+            thread = gpt.create_thread_messages(msg)
+            run = gpt.run_poll_thread(thread)
+            if(run.status == 'completed'):
+                msgs = gpt.fetch_thread_messages_list(thread, run.id)
+                if msgs != False:
+                    for msg in msgs:
+                        txt_outcome = msg.content[0].text.value
+                        #print(txt_outcome)
+            elif (run.status == 'expired' or run.status == 'failed' or run.status == 'incomplete' or run.status == 'cancelled'):
+                tk.messagebox.showwarning(message='El proceso de Analisis tuvo un error.', title='UPB APPLICATION')
+            obj_outcome = {'outcomes': txt_outcome, 'research_source': txt_resources}
+            connector = MongoDBConnector()
+            connector.connect()
+            doc = connector.update_document(mongo_filter, 'Projects', obj_outcome)
+            connector.disconnect()
+            self.progress_bar.stop()
+            self.btn_txt_analysis.config(state='normal')
+            if doc:
+                tk.messagebox.showinfo(message='Analisis de Datos Finalizo Correctamente.', title='UPB APPLICATION')
+        else:
+            tk.messagebox.showwarning(message='El proceso de Analisis tuvo un error al asociar el archivo a procesar.', title='UPB APPLICATION')

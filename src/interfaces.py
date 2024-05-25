@@ -1,17 +1,12 @@
 resources = {
     'project_id': '',
     'date': '',
-    'research_source': [
-
-    ],
-    'txt_raw': [
-
-    ],
+    'research_source': [],
+    'txt_raw': [],
     'txt_to_analyze': 'hfkhfkg6769'
 }
 
 projects = {
-    'project_id': '',
     'project_name': '',
     'topic': '',
     'description': '',
@@ -20,33 +15,17 @@ projects = {
     'status': '',
     'finished': False,
     'author': '',
-    'research_source': [
-
-    ],
-    'outcomes': [
-
-    ]
+    'research_source': [],
+    'outcomes': ''
 }
 
 data = {
     'title': '',
-    'bullets': [
-
-    ],
-    'paragraphs': [
-         
-    ]
+    'bullets': [],
+    'paragraphs': []
 }
 
 assistant_thread_messages = {
     'role': '',
-    'content': [
-
-    ]
+    'content': []
 }
-
-# {
-#     'date': '',
-#     'prompt': '',
-#     'data': ''
-# }
