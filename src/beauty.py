@@ -1,7 +1,7 @@
 import requests
 
 from bs4 import BeautifulSoup
-from src.interfaces import data
+from data.objs import data
 
 class BeautySoapScrap:
     """ This Class """

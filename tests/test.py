@@ -1,11 +1,11 @@
 
-from interfaces import resources, projects
+from data.objs import resources, projects
 from gpt import AIOpenAPI
 
 gpt = AIOpenAPI()
 
 file_name = 'txt_to_analyze.txt'
-file_path = f'./data/{file_name}'
+file_path = f'./docs/{file_name}'
 
 def create_txt_to_analyze_file(file_path):
     if resources['txt_to_analyze']:

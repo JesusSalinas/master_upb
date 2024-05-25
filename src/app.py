@@ -10,7 +10,7 @@ from tkinter import ttk
 from src.mongo import MongoDBConnector
 from src.gpt import AIOpenAPI
 from src.beauty import BeautySoapScrap
-from src.interfaces import resources, projects, assistant_thread_messages
+from data.objs import resources, projects, assistant_thread_messages
 from tkinter import filedialog
 from PIL import Image, ImageTk
 from datetime import date
@@ -66,7 +66,7 @@ class WelcomeFrame(tk.Frame):
         self.image_label = tk.Label(self, image=self.photo, bg='white')
         self.image_label.pack(pady=20)
 
-        self.btn_new_project = tk.Button(self, text='Iniciar nuevo proyecto', font=('Helvetica', 20), bg='gray', fg='black', command=self.start_project)
+        self.btn_new_project = tk.Button(self, text='Nuevo proyecto', font=('Helvetica', 20), bg='gray', fg='black', command=self.start_project)
         self.btn_new_project.pack(side=tk.LEFT, padx=100, pady=10)
 
         self.btn_select_project = tk.Button(self, text='Elegir proyecto', font=('Helvetica', 20), bg='gray', fg='black', command=self.select_project)
@@ -177,7 +177,7 @@ class ScrapFrame(tk.Frame):
         self.label_project.pack(side='top', anchor='nw')
         
         self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
-        self.label_topic.pack(side='top', anchor='ne')
+        self.label_topic.pack(side='top', anchor='ne', pady=0)
 
         self.label_title = tk.Label(self, text='Paso #2: Proceso web scrapping', font=('Helvetica', 24), bg='white', fg='black')
         self.label_title.pack(pady=5)
@@ -322,7 +322,7 @@ class TxtAnalysisFrame(tk.Frame):
         super().__init__(master)
 
         self.file_name = 'txt_to_analyze.txt'
-        self.file_path = f'./data/{self.file_name}'
+        self.file_path = f'./docs/{self.file_name}'
 
         self.configure(bg='white')
 
@@ -349,22 +349,19 @@ class TxtAnalysisFrame(tk.Frame):
             for catalogue in doc['prompts']:
                 checkbox_var = tk.BooleanVar()
                 checkbox = tk.Checkbutton(self, text=catalogue, variable=checkbox_var, bg='gray')
-                checkbox.pack(anchor=tk.W)
+                checkbox.pack(anchor='center', pady=5)
                 self.checkboxes.append((checkbox_var, catalogue))
         else: 
             print('FETCH CATALOGUES FAILED!')
 
         self.btn_txt_analysis = tk.Button(self, text='Analizar Información.', font=('Helvetica', 20), bg='gray', fg='black', command=self.txt_analysis)
-        self.btn_txt_analysis.pack(pady=5)
+        self.btn_txt_analysis.pack(pady=15)
 
     def txt_analysis(self):
         checked_values = []
-        file_name = 'txt_to_analyze.txt'
-        file_path = f'./data/{file_name}'
-
-        if file_path:
+        if self.file_path:
             try:
-                with open(file_path, 'w') as file:
+                with open(self.file_path, 'w') as file:
                     file.write(resources['txt_to_analyze'])
             except Exception as e:
                 tk.messagebox.showwarning(message=f'Error al guardar el texto analizar: {e}', title='UPB APPLICATION')
@@ -406,10 +403,12 @@ class TxtAnalysisFrame(tk.Frame):
 
     def start_thread(self, msg):
         self.btn_txt_analysis.config(state='disabled')
-        self.progress_bar = ttk.Progressbar(self, orient='horizontal', length=60, mode='indeterminate')
-        self.progress_bar.pack(pady=20, fill=tk.X)
+        style = ttk.Style(self)
+        style.configure('Custom.Horizontal.TProgressbar', troughcolor='white', background='green', thickness=50) 
+        self.progress_bar = ttk.Progressbar(self, style="Custom.Horizontal.TProgressbar", orient=tk.HORIZONTAL, length=300, mode='indeterminate')
+        self.progress_bar.pack(pady=20, fill=None, anchor='center')
         self.progress_bar.start()
-        time.sleep(10)
+        time.sleep(20)
         threading.Thread(target=self.gpt_analyis(msg)).start()
 
     def gpt_analyis(self, msg):

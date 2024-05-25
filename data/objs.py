@@ -3,7 +3,7 @@ resources = {
     'date': '',
     'research_source': [],
     'txt_raw': [],
-    'txt_to_analyze': 'hfkhfkg6769'
+    'txt_to_analyze': 'gergsegsgse'
 }
 
 projects = {
