@@ -5,6 +5,7 @@ import asyncio
 import copy
 import threading
 import time
+import re
 
 from tkinter import ttk
 from src.mongo import MongoDBConnector
@@ -312,7 +313,27 @@ class DataCleanFrame(tk.Frame):
 
     def clean_txt(self):
         print('Limpiando datos...')
-        #To-do implementar la funcion de limpeza de datos
+        all_txt = ""
+        for obj in resources['txt_raw']:
+            if 'title' in obj and obj['title']:
+                all_txt += ' ' + obj['title']
+            
+            if 'bullets' in obj and isinstance(obj['bullets'], list):
+                for bullet in obj['bullets']:
+                    if bullet:
+                        all_txt += ' ' + bullet
+
+            if 'paragraphs' in obj and isinstance(obj['paragraphs'], list):
+                for paragraph in obj['paragraphs']:
+                    if paragraph:
+                        all_txt += ' ' + paragraph
+        
+        all_txt = all_txt.lower()
+        all_txt = re.sub(r'[^a-zA-Z0-9\s]', '', all_txt)
+        all_txt = re.sub(r'\s+', ' ', all_txt).strip()
+
+        resources['txt_to_analyze'] = all_txt
+        #To-Do agregarlo a la DB
 
         self.master.drop_data_clean()
         self.master.add_txt_analysis()
@@ -337,6 +358,10 @@ class TxtAnalysisFrame(tk.Frame):
 
         self.label_description = tk.Label(self, text='Aquí podras realizar el analysis de la información. \n Por favor elige los puntos que deseas obtener del tema del projecto.', font=('Helvetica', 14), bg='white', fg='black')
         self.label_description.pack(pady=5)
+
+        style = ttk.Style(self)
+        style.configure('Custom.Horizontal.TProgressbar', troughcolor='white', background='green', thickness=50) 
+        self.progress_bar = ttk.Progressbar(self, style="Custom.Horizontal.TProgressbar", orient=tk.HORIZONTAL, length=500, mode='indeterminate')
 
         self.checkboxes = []
         connector = MongoDBConnector()
@@ -403,13 +428,10 @@ class TxtAnalysisFrame(tk.Frame):
 
     def start_thread(self, msg):
         self.btn_txt_analysis.config(state='disabled')
-        style = ttk.Style(self)
-        style.configure('Custom.Horizontal.TProgressbar', troughcolor='white', background='green', thickness=50) 
-        self.progress_bar = ttk.Progressbar(self, style="Custom.Horizontal.TProgressbar", orient=tk.HORIZONTAL, length=300, mode='indeterminate')
         self.progress_bar.pack(pady=20, fill=None, anchor='center')
         self.progress_bar.start()
         time.sleep(20)
-        threading.Thread(target=self.gpt_analyis(msg)).start()
+        #threading.Thread(target=self.gpt_analyis(msg)).start()
 
     def gpt_analyis(self, msg):
         txt_resources = projects['research_source']
