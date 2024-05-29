@@ -1,4 +1,5 @@
 import requests
+import re
 
 from bs4 import BeautifulSoup
 from data.objs import data
@@ -47,3 +48,25 @@ class BeautySoapScrap:
         else:
             print("FETCH self.body FAILED!:")
             return False
+
+    def clean_txt(self, txt_raw):
+        all_txt = ""
+        for obj in txt_raw:
+            if 'title' in obj and obj['title']:
+                all_txt += ' ' + obj['title']
+            
+            if 'bullets' in obj and isinstance(obj['bullets'], list):
+                for bullet in obj['bullets']:
+                    if bullet:
+                        all_txt += ' ' + bullet
+
+            if 'paragraphs' in obj and isinstance(obj['paragraphs'], list):
+                for paragraph in obj['paragraphs']:
+                    if paragraph:
+                        all_txt += ' ' + paragraph
+        
+        all_txt = all_txt.lower()
+        all_txt = re.sub(r'[^a-zA-Z0-9\s]', '', all_txt)
+        all_txt = re.sub(r'\s+', ' ', all_txt).strip()
+
+        return all_txt

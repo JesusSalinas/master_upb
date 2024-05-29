@@ -42,6 +42,9 @@ class App(tk.Tk):
     def add_data_clean(self):
         self.data_clean_frame = DataCleanFrame(self)
         self.data_clean_frame.pack(fill=tk.BOTH, expand=True)
+    def add_txt_results(self):
+        self.results_frame = ResultsFrame(self)
+        self.results_frame.pack(fill=tk.BOTH, expand=True)
     def drop_init(self):
         self.init_frame.pack_forget()
     def drop_welcome(self):
@@ -50,8 +53,10 @@ class App(tk.Tk):
         self.scrap_frame.pack_forget()
     def drop_data_clean(self):
         self.data_clean_frame.pack_forget()
-    def drop_txt_analysi(self):
+    def drop_txt_analysis(self):
         self.txt_analysis_frame.pack_forget()
+    def drop_txt_results(self):
+        self.results_frame.pack_forget()
 
 class WelcomeFrame(tk.Frame):
     def __init__(self, master):
@@ -430,8 +435,9 @@ class TxtAnalysisFrame(tk.Frame):
         self.btn_txt_analysis.config(state='disabled')
         self.progress_bar.pack(pady=20, fill=None, anchor='center')
         self.progress_bar.start()
-        time.sleep(20)
-        #threading.Thread(target=self.gpt_analyis(msg)).start()
+        threading.Thread(target=self.gpt_analyis(msg)).start()
+        self.master.drop_txt_analysis()
+        self.master.add_txt_results()
 
     def gpt_analyis(self, msg):
         txt_resources = projects['research_source']
@@ -462,3 +468,49 @@ class TxtAnalysisFrame(tk.Frame):
                 tk.messagebox.showinfo(message='Analisis de Datos Finalizo Correctamente.', title='UPB APPLICATION')
         else:
             tk.messagebox.showwarning(message='El proceso de Analisis tuvo un error al asociar el archivo a procesar.', title='UPB APPLICATION')
+
+class ResultsFrame(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.configure(bg='white')
+
+        self.label_project = tk.Label(self, text=f'Proyecto: {projects["project_name"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
+        self.label_project.pack(side='top', anchor='nw')
+        
+        self.label_topic = tk.Label(self, text=f'Tema: {projects["topic"]}', font=('Helvetica', 14), bg='lightblue', fg='black')
+        self.label_topic.pack(side='top', anchor='ne')
+
+        self.label_title = tk.Label(self, text='Paso #5: Revisión de Resultados', font=('Helvetica', 24), bg='white', fg='black')
+        self.label_title.pack(pady=5)
+
+        self.label_description = tk.Label(self, text='Aquí podras descargar los resultados. \n Al dar click en descargar obtendras un archivo .txt con los resultados', font=('Helvetica', 14), bg='white', fg='black')
+        self.label_description.pack(pady=5)
+
+        self.btn_download_results = tk.Button(self, text='Descargar resultados', font=('Helvetica', 20), bg='gray', fg='black', command=self.download_results)
+        self.btn_download_results.pack(pady=10)
+
+    def download_results(self):
+        document_id = resources['project_id']
+        mongo_filter = {'_id': ObjectId(document_id)}
+
+        connector = MongoDBConnector()
+        connector.connect()
+        doc = connector.find_document('Projects', mongo_filter)
+        connector.disconnect()
+
+        file_path = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Archivos de texto', '*.txt')])
+       
+        if doc: 
+            doc_string = doc
+            doc_json = json.loads(doc_string)
+            results = doc_json['outcomes']
+            if file_path:
+                try:
+                    with open(file_path, 'w') as file:
+                        file.write(results)
+                    tk.messagebox.showwarning(message='El archivo se ha descargado correctamente.', title='UPB APPLICATION')
+                except Exception as e:
+                    tk.messagebox.showwarning(message=f'Error al descargar el archivo. Intenta nuevamente.{e}', title='UPB APPLICATION')
+        else:
+            tk.messagebox.showwarning(message='No se encontraron resultados. Intentar más tarde.', title='UPB APPLICATION')
