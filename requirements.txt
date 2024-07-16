@@ -3,3 +3,5 @@ getPDF
 requests
 bs4
 pillow
+pymongo
+dotenv
